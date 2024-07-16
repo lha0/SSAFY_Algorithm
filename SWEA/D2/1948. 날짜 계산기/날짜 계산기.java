@@ -39,8 +39,11 @@ public class Solution {
 			
 			int answer = diffDay1 + diffDay2 + diffMonth;
 			
-			System.out.println("#" + t + " " + answer);
+			bw.write("#" + t + " " + answer + '\n');
 		}
+		bw.flush();
+		br.close();
+		bw.close();
 		
 
 	}
