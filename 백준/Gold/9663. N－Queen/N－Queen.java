@@ -1,72 +1,61 @@
-import java.io.*;
-import java.util.*;
+import java.util.Scanner;
 
 public class Main {
 	static int N;
-	static int queen;
+	static boolean[][] v;
 	static int result = 0;
 
-	public static void main(String[] args) throws IOException {
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
-		
-		String[] input = br.readLine().split(" ");
-		N = Integer.parseInt(input[0]);
-		
-		int[] map = new int[N];
-		boolean[] visited = new boolean[N];
-		queen = N;
-		
-		run(0, map, visited, 0);
-		
-		bw.write(result + "\n");
-		bw.flush();
-		bw.close();
-		br.close();
+	public static void main(String[] args) {
+		Scanner sc = new Scanner(System.in);
+
+		N = sc.nextInt();
+		v = new boolean[N][N];
+
+		dfs(0);
+		System.out.println(result);
 
 	}
-	
-	public static boolean check(int val, int row, int[] map, boolean[] visited) {
-		//같은 열에 있는 경우
-		if (visited[val]) {
-			return false;
-		}
-		
-		for (int i = 1; i < N; i++) {
-			//대각선 왼쪽 위
-			if (row-i >= 0 && map[row-i] == val-i) {
-				return false;
-			}
-				
-			//대각선 오른쪽 위
-			if (row-i >= 0 && map[row-i] == val+i) {
-				return false;
-			}
-		}
-		return true;
-	}
-	
-	public static void run(int row, int[] map, boolean[] visited, int count) {
-	//	System.out.println(row + " " + Arrays.toString(map) + " " + Arrays.toString(visited) + " " + count);
-		if (count == N) {
-			result += 1;
+
+	private static void dfs(int cnt) {
+		if (cnt == N) {
+			result++;
 			return;
 		}
-		
-		for (int val = 0; val < N; val++){
-			if (check(val, row, map, visited)) {
-				map[row] = val;
-				visited[val] = true;
-				run(row+1, map, visited, count+1);
-				map[row] = 0;
-				visited[val] = false;
-			} else {
-				continue;
+		for( int i = 0 ; i < N ; i++) {
+			if(check(cnt , i)) {
+				v[cnt][i]=true;
+				dfs(cnt+1);
 			}
+			v[cnt][i]= false;
 			
 		}
-		
-		return;
+	}
+
+	private static boolean check(int y, int x) {
+
+		// 위 , 대각선 왼쪽 대각선 오른쪽만 검사하면 됨
+
+		// 위 검사 y 값이 계속 -된다
+		for (int i = y; i >= 0; i--) {
+			if (v[i][x]) {
+				return false;
+			}
+		}
+
+		// 대각선 위 검사
+		for (int i = y, j = x; i >= 0 && j >= 0; i--, j--) {
+			if (v[i][j]) {
+				return false;
+			}
+		}
+
+		for (int i = y, j = x; i >= 0 && j < N; i--, j++) {
+			if (v[i][j]) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 }
