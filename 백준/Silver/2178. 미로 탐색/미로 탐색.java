@@ -23,8 +23,7 @@ public class Main {
 			}
 		}
 		
-		
-		bfs(0, 0);
+		bfs();
 		
 		bw.write(maze[N-1][M-1] + "\n");
 		bw.flush();
@@ -32,10 +31,9 @@ public class Main {
 		br.close();
 	}
 	
-	public static void bfs(int i, int j) {
+	public static void bfs() {
 		Queue<int[]> queue = new ArrayDeque<int[]>();
 		queue.offer(new int[] {0, 0});
-		
 		
 		while (queue.size() != 0) {
 			int[] cur = queue.poll();
@@ -53,5 +51,4 @@ public class Main {
 			}
 		}
 	}
-
 }
