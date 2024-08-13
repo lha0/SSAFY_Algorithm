@@ -9,6 +9,7 @@ import java.util.*;
  * 4. 차이와 min 값 비교 후 갱신
  * 5. 다시 1로 돌아가서 다르게 구역 나눠서 총합 구하고 차이계산, min 갱신
  * */
+
 public class Main {
 	static int N;
 	static int min = Integer.MAX_VALUE;
@@ -41,10 +42,9 @@ public class Main {
 				int adjArea = Integer.parseInt(st.nextToken());
 				adjList[i].add(adjArea - 1);
 			}
-
 		}
 
-		// 부분집합
+		// 부분집합부터 구하기
 		sel = new boolean[N];
 		comb(0);
 
@@ -60,7 +60,7 @@ public class Main {
 		if (idx == N) {
 			ArrayList<Integer> aList = new ArrayList<Integer>();
 			ArrayList<Integer> bList = new ArrayList<Integer>();
-
+			
 			for (int i = 0; i < N; i++) {
 				if (sel[i]) {
 					aList.add(i);
@@ -69,10 +69,12 @@ public class Main {
 				}
 			}
 			
+			// 2구역으로 나뉘어졌는가
 			if (aList.size() == 0 || bList.size() == 0) {
 				return;
 			}
 			
+			// 올바르게 연결되었는지 확인 후 인구 계산
 			if (check(aList) && check(bList)) {
 				cal(aList, bList);
 			}
@@ -87,7 +89,7 @@ public class Main {
 	}
 
 	public static boolean check(ArrayList<Integer> list) {
-		// list 내 점들이 연결되어 있는지 확인
+		// 인접 노드들 중에 list에 포함되어 있는 애들로만 newList 만들어서 비교
 		Queue<Integer> newList = new ArrayDeque<Integer>();
 		Queue<Integer> needVisit = new ArrayDeque<Integer>();
 		boolean[] visited = new boolean[N];
@@ -107,7 +109,7 @@ public class Main {
 			}
 		}
 
-		// 인접노드들 중 list에 포함된 애들 newList와 기존 list를 비교
+		// 두 리스트의 크기가 같다면 올바른 리스트
 		if (list.size() == newList.size()) {
 			return true;
 		}
