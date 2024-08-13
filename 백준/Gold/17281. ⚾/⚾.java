@@ -1,92 +1,129 @@
-import java.util.Arrays;
-import java.util.Scanner;
+import java.io.*;
+import java.util.*;
+
+/*
+선수들 순서를 순열로 만들기
+각 순열 만들 때마다 점수 계산
+-> 아웃 개수, 1루, 2루, 3루 타자 여부, 
+ * */
 
 public class Main {
-
-	static int[][] match;
-	static int max = Integer.MIN_VALUE;
-	static int n;
-	static int cnt;
-
-	public static void main(String[] args) {
-		int[] arr = { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
-		int[] sel = new int[arr.length];
-		boolean[] v = new boolean[arr.length];
-		Scanner sc = new Scanner(System.in);
-		n = sc.nextInt();
-		match = new int[n][9];
-
-		for (int i = 0; i < n; i++) {
+	static int ining;
+	static int[] player = new int[] {0, 1, 2, 3, 4, 5, 6, 7, 8};
+	static int[][] score;
+	static int max = 0;
+	
+	public static void main(String[] args) throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+		
+		String[] input = br.readLine().split(" ");
+		ining = Integer.parseInt(input[0]);
+		
+		score = new int[ining][9];
+		for (int i = 0; i < ining; i++) {
+			StringTokenizer st = new StringTokenizer(br.readLine());
 			for (int j = 0; j < 9; j++) {
-				match[i][j] = sc.nextInt();
+				score[i][j] = Integer.parseInt(st.nextToken());
+			}
+		
+		}
+		int[] sel = new int[9];
+		boolean[] visited = new boolean[9];
+		game(0, sel, visited);
+		
+		bw.write(max + "\n");
+		bw.flush();
+		bw.close();
+		br.close();
+
+	}
+	
+	public static void game(int r, int[] sel, boolean[] visited) {
+		if (r == 9) {
+			if (sel[3] != 0) {
+				return;
+			} else {
+//				System.out.println("player order is s"+Arrays.toString(sel));
+				cal(sel);
+				return;
 			}
 		}
-
-		sel[4] = 0; // 1번 선수는 항상 4번 타자 (인덱스 3)
-		v[0] = true;
-		rec(arr, sel, v, 0);
-		System.out.println(max);
-	}
-
-	private static void rec(int[] arr, int[] sel, boolean[] v, int k) {
-		if (k == arr.length) {
-			max = Math.max(max, baseball(sel));
-			return;
-		}
-
-		if (k == 3) {
-			rec(arr, sel, v, k + 1);
-			return;
-		}
-
-		for (int i = 0; i < arr.length; i++) {
-			if (!v[i]) {
-				v[i] = true;
-				sel[k] = arr[i];
-				rec(arr, sel, v, k + 1);
-				v[i] = false;
+		
+		for (int i = 0; i < 9; i++) {
+			if (!visited[i]) {
+				visited[i] = true;
+				sel[r] = player[i];
+				game(r+1, sel, visited);
+				visited[i] = false;
 			}
 		}
 	}
-
-	private static int baseball(int[] arr) {
-
-		int result = 0;
-		int start = 0; // 현재 타자
-		for (int k = 0; k < n; k++) {
+	
+	public static void cal(int[] sel) {
+		int idx = 0;
+		int curScore = 0;
+		for (int in = 0; in < ining; in++) {
 			int out = 0;
-			boolean[] base = new boolean[4]; // base[0]은 홈, base[1]은 1루, base[2]은 2루, base[3]은 3루
-			while (out < 3) {
-				int score = match[k][arr[start]];
-				if (score == 0) {
-					out++;
-				} else {
-
-					// 루에 있는 주자들 진루
-					for (int i = 3; i >= 0; i--) {
-						if (base[i]) {
-							int value = i + score;
-							if (value >= 4) {
-								result++; // 홈런
-							} else {
-								base[value] = true; // 진루
-							}
-							base[i] = false; // 출루한 주자 처리
+			int[] base = new int[3];
+			
+			while (out != 3) {
+				int curPlayer = sel[idx];
+//				
+//				System.out.println("current Player is " + curPlayer + " " + score[in][curPlayer]);
+//				System.out.println(Arrays.toString(score[in]));
+				
+				switch(score[in][curPlayer]) {
+				//case 1, 2, 3:
+				//java 8
+				case 1: case 2: case 3:
+					curScore += move(base, score[in][curPlayer]);
+					break;
+			
+				case 4: 
+//					System.out.println("homerun before " + base + " " + curScore);
+					//현재 주자 +1
+					curScore++;
+					// base에 있는 선수들 +1
+					for (int i = 0; i < base.length; i++) {
+						if (base[i]==1) {
+							base[i] = 0;
+							curScore++;
 						}
 					}
-					// 현재 타자 처리
-					if (score >= 4) {
-						result++; // 홈런
-					} else {
-						base[score] = true; // 현재 타자 진루
-					}
+//					System.out.println("homerun after " + base + " " + curScore);
+					break;
+				
+				default:
+					out++;
+					break;
 				}
-				start++;
-				if (start == 9) {
-					start = 0;
+				idx = (idx + 1) % 9;
+				 
+//				System.out.println("ining is " + in + " base is " + Arrays.toString(base) + " curScore is " + curScore);
+				
+			}
+			
+		}
+		max = Math.max(max, curScore);
+	
+	}
+	
+	public static int move(int[] base, int num) {
+		int baseScore = 0;
+		for (int i = base.length-1; i >= 0; i--) {
+			if (base[i] == 1) {
+				if (i + num < 3) {
+					base[i + num] = 1;
+					base[i] = 0;
+				} else {
+					baseScore++;
+					base[i] = 0;
 				}
 			}
 		}
-		return result;
+		base[num-1] = 1;
+		return baseScore;
 	}
+
 }
