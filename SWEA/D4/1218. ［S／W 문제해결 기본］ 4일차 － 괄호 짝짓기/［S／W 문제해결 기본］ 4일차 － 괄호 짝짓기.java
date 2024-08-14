@@ -1,69 +1,38 @@
-import java.io.*;
-import java.util.*;
+
+import java.util.Iterator;
+import java.util.Scanner;
+import java.util.Stack;
 
 public class Solution {
-	static int N;
 
-	public static void main(String[] args) throws IOException {
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
-		
-		Stack<String> stack = new Stack<String>();
-		
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		Scanner sc = new Scanner(System.in);
+
 		for (int tc = 1; tc <= 10; tc++) {
-			N= Integer.parseInt(br.readLine().split(" ")[0]);
-			String[] inputs = br.readLine().split("");
-			int possible = 1;
-			
-			// {, (, [ => stack push
-			// 닫는거면 pop 후 비교
-			 for (int i = 0; i < inputs.length; i++) {
+			int size = sc.nextInt();
 
-				if (inputs[i].equals("(") || inputs[i].equals("{") || inputs[i].equals("[") || inputs[i].equals("<")) {
-					stack.push(inputs[i]);
+			String input = sc.next();
+			Stack<Character> st = new Stack<>();
 
+			for (char c : input.toCharArray()) {
+				if (c == ')' && st.peek() == '(') {
+					st.pop();
+				} else if (c == ']' && st.peek() == '[') {
+					st.pop();
+				} else if (c == '}' && st.peek() == '{') {
+					st.pop();
+				} else if (c == '>' && st.peek() == '<') {
+					st.pop();
 				} else {
-					if (stack.size() != 0) {
-						String item = stack.pop();
-						
-						switch(inputs[i]) {
-						case ")":
-							if (!item.equals("(")) {
-								possible = 0;
-								break;
-							}
-							break;
-						case "}":
-							if (!(item.equals("{"))) {
-								possible = 0;
-								break;
-							}
-							break;
-						case ">":
-							if (!(item.equals("<"))) {
-								possible = 0;
-								break;
-							}
-							break;
-						case "]":
-							if (!(item.equals("["))) {
-								possible = 0;
-								break ;
-							}
-							break;
-						default:
-							break;
-						}
-					}
-					
+					st.push(c);
 				}
+
 			}
-			bw.write("#" + tc + " " + possible + "\n");
+			int result = st.isEmpty() ? 1 : 0;
+			System.out.println("#" + tc + " " + result);
+
 		}
-		
-		bw.flush();
-		bw.close();
-		br.close();
 
 	}
 
