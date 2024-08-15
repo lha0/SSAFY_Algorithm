@@ -1,16 +1,16 @@
 import java.io.*;
+import java.util.*;
 
 public class Main {
 	static int N, M;
 	static int[] origin;
-
 	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 		
-		String[] inputs = br.readLine().split(" ");
-		N = Integer.parseInt(inputs[0]);
-		M = Integer.parseInt(inputs[1]);
+		StringTokenizer st = new StringTokenizer(br.readLine());
+		N = Integer.parseInt(st.nextToken());
+		M = Integer.parseInt(st.nextToken());
 		
 		origin = new int[N];
 		for (int i = 0; i < N; i++) {
@@ -18,15 +18,15 @@ public class Main {
 		}
 		
 		int[] sel = new int[M];
-		boolean[] visited = new boolean[N];
-		comb(0, 0, visited, sel, bw);
+		boolean[] visited = new boolean[N]; 
+		comb(0, sel, visited, bw);
 		
 		bw.flush();
 		bw.close();
 		br.close();
 	}
 	
-	public static void comb(int idx, int k, boolean[] visited, int[] sel, BufferedWriter bw)  throws IOException{
+	public static void comb( int k, int[] sel, boolean[] visited, BufferedWriter bw )  throws IOException {
 		if (k == sel.length) {
 			for (int i = 0; i < sel.length; i++) {
 				bw.write(sel[i] + " ");
@@ -35,14 +35,13 @@ public class Main {
 			return;
 		}
 		
-		for (int i = 0; i < origin.length; i++) {
+		for (int i = 0; i < N; i++) {
 			if (!visited[i]) {
 				visited[i] = true;
 				sel[k] = origin[i];
-				comb(idx, k+1, visited, sel, bw);
+				comb(k+1, sel, visited, bw);
 				visited[i] = false;
 			}
-			
 		}
 		
 	}
