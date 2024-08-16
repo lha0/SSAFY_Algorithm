@@ -17,9 +17,7 @@ public class Main {
 			origin[i] = i+1;
 		}
 		
-		int[] sel = new int[M];
-		boolean[] visited = new boolean[N]; 
-		comb(0, sel, visited, bw);
+		comb( 0, new int[M], new boolean[N], bw);
 		
 		bw.flush();
 		bw.close();
@@ -27,15 +25,16 @@ public class Main {
 	}
 	
 	public static void comb( int k, int[] sel, boolean[] visited, BufferedWriter bw )  throws IOException {
-		if (k == sel.length) {
-			for (int i = 0; i < sel.length; i++) {
+		
+		if (sel.length == k) {
+			for (int i = 0; i < k; i++) {
 				bw.write(sel[i] + " ");
 			}
 			bw.write("\n");
 			return;
 		}
 		
-		for (int i = 0; i < N; i++) {
+		for (int i = 0; i < origin.length; i++) {
 			if (!visited[i]) {
 				visited[i] = true;
 				sel[k] = origin[i];
@@ -43,7 +42,6 @@ public class Main {
 				visited[i] = false;
 			}
 		}
-		
 	}
 
 }
