@@ -17,8 +17,7 @@ public class Main {
 			origin[i] = i+1;
 		}
 		
-		int[] sel = new int[M];
-		comb(0, 0, sel, bw);
+		comb(0, 0, new int[M], bw);
 		
 		bw.flush();
 		bw.close();
@@ -26,8 +25,9 @@ public class Main {
 	}
 	
 	public static void comb( int idx, int k, int[] sel, BufferedWriter bw )  throws IOException {
-		if (k == sel.length) {
-			for (int i = 0; i < sel.length; i++) {
+		
+		if (sel.length == k) {
+			for (int i = 0; i < k; i++) {
 				bw.write(sel[i] + " ");
 			}
 			bw.write("\n");
@@ -39,7 +39,6 @@ public class Main {
 		sel[k] = origin[idx];
 		comb(idx+1, k+1, sel, bw);
 		comb(idx+1, k, sel, bw);
-		
 	}
 
 }
