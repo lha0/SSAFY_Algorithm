@@ -1,80 +1,103 @@
-import java.io.*;
 import java.util.*;
 
+class Pipe {
+	int r;
+	int c;
+	int type;
+
+	Pipe(int r, int c, int type) {
+		this.r = r;
+		this.c = c;
+		this.type = type;
+	}
+}
+
 public class Main {
-	static int N, answer;
-	static int[][] home;
 
-	// 다음으로 갈 방향 탐색
-	// 가로 방향 : dx[0] 세로 : dx[1] 대각선 dx[2]
-	static int[][] dx = new int[][] { { 0, 0, 1 }, { 0, 1, 1 }, { 0, 1, 1 } };
-	static int[][] dy = new int[][] { { 1, 0, 1 }, { 0, 0, 1 }, { 1, 0, 1 } };
+	static int[] dr = { 0, 1, 1, 1, 0, 1, 1 };
+	static int[] dc = { 1, 1, 0, 1, 1, 0, 1 };
+	static int[] dt = { 2, 4, 3, 4, 2, 3, 4 };
+	static int result = 0;
+	static int[][] map;
+	static int n;
 
-	// 대각선으로 가기 전에 3곳 비어있는지 확인
-	static int[] xcheck = new int[] { 0, 1, 1 };
-	static int[] ycheck = new int[] { 1, 0, 1 };
+	public static void main(String[] args) {
 
-	public static void main(String[] args) throws IOException {
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+		Scanner sc = new Scanner(System.in);
 
-		N = Integer.parseInt(br.readLine().split(" ")[0]);
-
-		home = new int[N][N];
-		for (int i = 0; i < N; i++) {
-			StringTokenizer st = new StringTokenizer(br.readLine());
-			for (int j = 0; j < N; j++) {
-				home[i][j] = Integer.parseInt(st.nextToken());
+		n = sc.nextInt();
+		map = new int[n + 1][n + 1];
+		for (int i = 1; i <= n; i++) {
+			for (int j = 1; j <= n; j++) {
+				map[i][j] = sc.nextInt();
 			}
 		}
-
-		// 초기 값
-		home[0][0] = 2;
-		home[0][1] = 2;
-
-		dfs(0, 1, 0);
-
-		bw.write(answer + "\n");
-		bw.flush();
-		bw.close();
-		br.close();
+		// 가로 : 2 세로 : 3 대각선 : 4
+		if(map[n][n]==0) {
+			bfs(1, 2, 2);			
+		}
+		System.out.println(result);
 	}
 
-	public static void dfs(int r, int c, int dir) {
-		if (r == N - 1 && c == N - 1) {
-			answer++;
-			return;
-		}
+	private static void bfs(int r, int c, int t) {
+		Queue<Pipe> q = new ArrayDeque<>();
+		q.offer(new Pipe(r, c, t));
 
-		// i=0: 가로, 1: 세로, 2: 대각선
-		for (int i = 0; i < dx[dir].length; i++) {
-			if (dx[dir][i] == 0 && dy[dir][i] == 0) {
-				continue;
+		while (!q.isEmpty()) {
+			Pipe p = q.poll();
+
+			if (p.r == n && p.c == n) {
+				result++;
 			}
-			int nx = r + dx[dir][i];
-			int ny = c + dy[dir][i];
-			int ndir = i;
-
-			// 다음 갈 방향이 대각선일 때는 세 방향 다 탐색
-			if (ndir == 2) {
-				for (int q = 0; q < 3; q++) {
-					if (r + xcheck[q] >= 0 && r + xcheck[q] < N && c + ycheck[q] >= 0 && c + ycheck[q] < N
-							&& home[r + xcheck[q]][c + ycheck[q]] == 1)
-						return;
+			// 가로 세로 대각선 검사
+			int nr;
+			int nc;
+			int type = p.type;
+			if (type == 2) {
+				for (int i = 0; i < 2; i++) {
+					nr = p.r + dr[i];
+					nc = p.c + dc[i];
+					if (nr >= 0 && nr < n + 1 && nc >= 0 && nc < n + 1 && map[nr][nc] == 0) {
+						if (dt[i] == 4) {
+							if (map[nr - 1][nc] == 0 && map[nr][nc - 1] == 0) {
+								q.offer(new Pipe(nr, nc, dt[i]));
+							}
+						} else {
+							q.offer(new Pipe(nr, nc, dt[i]));
+						}
+					}
+				}
+			} else if (type == 3) {
+				for (int i = 2; i < 4; i++) {
+					nr = p.r + dr[i];
+					nc = p.c + dc[i];
+					if (nr >= 0 && nr < n + 1 && nc >= 0 && nc < n + 1 && map[nr][nc] == 0) {
+						if (dt[i] == 4) {
+							if (map[nr - 1][nc] == 0 && map[nr][nc - 1] == 0) {
+								q.offer(new Pipe(nr, nc, dt[i]));
+							}
+						} else {
+							q.offer(new Pipe(nr, nc, dt[i]));
+						}
+					}
+				}
+			} else if (type == 4) {
+				for (int i = 4; i < 7; i++) {
+					nr = p.r + dr[i];
+					nc = p.c + dc[i];
+					if (nr >= 0 && nr < n + 1 && nc >= 0 && nc < n + 1 && map[nr][nc] == 0) {
+						if (dt[i] == 4) {
+							if (map[nr - 1][nc] == 0 && map[nr][nc - 1] == 0) {
+								q.offer(new Pipe(nr, nc, dt[i]));
+							}
+						} else {
+							q.offer(new Pipe(nr, nc, dt[i]));
+						}
+					}
 				}
 			}
-
-			// 범위 탐색 + 가로나 세로로 이동할 때는 갈 방향만 탐색
-			if (nx < 0 || nx >= N || ny < 0 || ny >= N || home[nx][ny] == 1) {
-				continue;
-			}
-			// 갈 수 있으면 재귀
-			else {
-				home[nx][ny] = 2;
-				dfs(nx, ny, ndir);
-				home[nx][ny] = 0;
-			}
 		}
+
 	}
 
 }
