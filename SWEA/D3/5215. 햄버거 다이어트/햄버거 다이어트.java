@@ -1,77 +1,100 @@
-import java.util.*;
 import java.io.*;
+import java.util.*;
 
 public class Solution {
 	static int T, N, L;
-	static int max; 
+	static int[] score;
+	static int[] kcal;
+	static int[] tgt;
 
 	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
-		
-		String[] input = br.readLine().split(" ");
-		T = Integer.parseInt(input[0]);
-		
-		for (int t = 1; t <= T; t++) {
-			String[] inputN = br.readLine().split(" ");
-			N = Integer.parseInt(inputN[0]);
-			L = Integer.parseInt(inputN[1]);
-			max = 0;
-			
-			int[] Tarr = new int[N];
-			int[] Karr = new int[N];
-			for (int n = 0; n < N; n++) {
-				String[] gr = br.readLine().split(" ");
-				Tarr[n] = Integer.parseInt(gr[0]);
-				Karr[n] = Integer.parseInt(gr[1]);
+
+		T = Integer.parseInt(br.readLine().split(" ")[0]);
+
+		for (int tc = 1; tc <= T; tc++) {
+			StringTokenizer st = new StringTokenizer(br.readLine());
+			N = Integer.parseInt(st.nextToken());
+			L = Integer.parseInt(st.nextToken());
+
+			score = new int[N];
+			kcal = new int[N];
+			tgt = new int[N];
+
+			for (int i = 0; i < N; i++) {
+				StringTokenizer sts = new StringTokenizer(br.readLine());
+				int Ti = Integer.parseInt(sts.nextToken());
+				int Ki = Integer.parseInt(sts.nextToken());
+
+				score[i] = Ti;
+				kcal[i] = Ki;
 			}
-			
-			
-			for (int i = 1; i <= N; i++ ) {
-				int[] selT = new int[i];
-				int[] selK = new int[i];
-				recursive(0, 0, Tarr, Karr, selT, selK);
+
+			int max = 0;
+			for (int r = 1; r <= N; r++) {
+				for (int c = 0; c < r; c++) {
+					tgt[c] = 1;
+				}
+
+				Arrays.sort(tgt);
+
+				do {
+					int scoreSum = 0;
+					int kcalSum = 0;
+
+					for (int i = 0; i < N; i++) {
+						if (tgt[i] == 0)
+							continue;
+
+						kcalSum += kcal[i];
+						scoreSum += score[i];
+
+						if (kcalSum > L)
+							break;
+						else
+							max = Math.max(scoreSum, max);
+					}
+
+				} while (np(tgt));
 			}
-			
-			bw.write("#" + t + " " + max + '\n');
+
+			bw.write("#" + tc + " " + max + "\n");
 		}
+
 		bw.flush();
-		br.close();
 		bw.close();
+		br.close();
+
 	}
-	
-	public static void recursive(int n, int r, int[] Tarr, int[] Karr, int[] selT, int[] selK) {
-		if (r == selK.length) {
-			test(Tarr, Karr,selT, selK);
-			//System.out.println(Arrays.toString(selK));
-			return;
+
+	private static boolean np(int[] score) {
+
+		int N = score.length;
+		int i = N - 1;
+		while (i > 0 && score[i - 1] >= score[i])
+			--i;
+
+		if (i == 0)
+			return false;
+
+		int j = N - 1;
+		while (score[i - 1] >= score[j])
+			--j;
+
+		swap(score, i - 1, j);
+
+		int k = N - 1;
+		while (i < k) {
+			swap(score, i++, k--);
 		}
-		
-		if (n == N) {
-			return;
-		}
-		
-		selK[r] = Karr[n];
-		selT[r] = Tarr[n];
-		recursive(n+1, r+1, Tarr, Karr, selT, selK);
-		recursive(n+1, r, Tarr, Karr, selT, selK);
+		return true;
 	}
-	
-	public static void test(int[] Tarr, int[] Karr, int[] selT, int[] selK) {
-		int sumK = 0;
-		int sumT = 0;
-		for (int i = 0; i < selK.length; i++) {
-			sumK += selK[i];
-			sumT += selT[i];
-		}
-		
-		if (sumK > L) return;
-		else {
-//			System.out.println(Arrays.toString(selK));
-//			System.out.println(Arrays.toString(selT));
-//			System.out.println(max + " " + sumT);
-			max = Math.max(max, sumT);
-		}
+
+	private static void swap(int[] score, int i, int j) {
+		int temp = score[i];
+		score[i] = score[j];
+		score[j] = temp;
 	}
 
 }
