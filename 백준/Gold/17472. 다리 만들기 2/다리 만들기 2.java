@@ -1,13 +1,28 @@
+
 import java.io.*;
 import java.util.*;
 
 public class Main {
 	static int N, M, total, sum, answer = Integer.MAX_VALUE;
 	static int[][] map;
-	static int[] numberOfIsland = new int[10];
-	static int[][] adjMatrix;
-	static List<int[]> graph = new ArrayList<int[]> ();
-	static boolean connect = true;
+	static int[] numberOfIsland = new int[100];
+	static ArrayList<Vertex>[] graph;
+	
+	static class Vertex implements Comparable<Vertex> {
+		int e, w;
+		
+		Vertex(int e, int w) {
+			this.e = e;
+			this.w = w;
+		}
+
+		@Override
+		public int compareTo(Vertex o) {
+			return this.w - o.w;
+		}
+		
+		
+	}
 
 	static int[] dx = { 0, 0, 1, -1 };
 	static int[] dy = { 1, -1, 0, 0 };
@@ -41,50 +56,17 @@ public class Main {
 			}
 		}
 		
-//		print();
 		total = number - 1;
-
-		adjMatrix = new int[12][12];
-		for (int i = 0; i < 12; i++) {
-			for (int j = 0; j < 12; j++) {
-				adjMatrix[i][j] = 100;
-			}
-		}
-
+		
+		 graph = new ArrayList[50];
+		 for (int i = 0; i < 50; i++) {
+			 graph[i] = new ArrayList<>();
+		 }
+		 
 		//다리 만들기. 인접행렬로 가중치 표현
 		makeBridge();
-		
-//		for (int i = 0; i < adjMatrix.length; i++) {
-//			System.out.println(Arrays.toString(adjMatrix[i]));
-//		}
 
-		boolean[] visited = new boolean[12];
-		
-		//인접 행렬을 {from, to, weight} 형식의 리스트로 만들기
-		for (int i = 0; i < adjMatrix.length; i++ ) {
-			for (int j = 0; j < adjMatrix[i].length; j++) {
-				if (adjMatrix[i][j] != 100) {
-					graph.add(new int[] {i, j, adjMatrix[i][j]});
-				}
-			}
-		}
-		
-		Collections.sort(graph, new Comparator<int[]> () {
-			@Override
-			public int compare(int[] o1, int[] o2) {
-				return o1[2] - o2[2];
-			}
-		});
-		
-//		for (int i =0 ; i < graph.size(); i++) {
-//			System.out.println(Arrays.toString(graph.get(i)));
-//		}
-		
-		//최단 경로 찾기
-		findRoute();
-		
-		if (sum == 0 || connect == false)
-			sum = -1;
+		prim();
 		
 		bw.write(sum + "\n");
 		bw.flush();
@@ -93,71 +75,36 @@ public class Main {
 
 	}
 
-	private static void findRoute() {
-		int[] parent = new int[total-1];
-		boolean[] v = new boolean[total-1];
-		for (int i = 0; i < parent.length; i++) {
-			parent[i] = i;
+	
+
+	private static void prim() {
+		boolean[] visited = new boolean[total-1];
+		Queue<Vertex> queue = new PriorityQueue();
+		queue.offer(new Vertex(0, 0));
+		
+		while (!queue.isEmpty()) {
+			Vertex cur = queue.poll();
+			
+			if (visited[cur.e]) continue;
+			
+			visited[cur.e] = true;
+			sum += cur.w;
+			
+			for (Vertex next : graph[cur.e]) {
+				if (!visited[next.e]) {
+					queue.offer(new Vertex(next.e, next.w));
+				}
+			}
 		}
 		
-		for (int i = 0; i < graph.size(); i++) {
-//			int check = 0;
-//			for (int j = 0; j < v.length; j++) {
-//				if (v[j]) check++;
-//			}
-//			
-//			if (check == v.length) break;
-			
-			int[] cur = graph.get(i);
-			
-			int from = cur[0]-2;
-			int to = cur[1]-2;
-			int weight = cur[2];
-			
-//			System.out.println("from : " + from + " to : " + to + " parent[from] : " + find(from, parent) + " parent[to] " +  find(to, parent) );
-//			System.out.println(Arrays.toString(v));
-			
-			if (find(from, parent) == find(to, parent)) continue;
-			else {
-				parent = union(from, to, parent);
-				sum += weight;
-				v[from] = true;
-				v[to] = true;
-			}	
-//			System.out.println(Arrays.toString(v));
-//			System.out.println(Arrays.toString(parent));
-//			System.out.println(sum);
-		}
-		
-//		System.out.println(Arrays.toString(parent));
-		
-		// 모든 경로 연결 후 parent 배열 값이 다른게 있으면 그래프 연결이 안되었기 때문에 실패
-		for (int j = 1; j < parent.length; j++) {
-			if (find(parent[j-1], parent) != find(parent[j], parent)) {
-				connect = false;
+		for (int i = 0; i < visited.length; i++) {
+			if (!visited[i]) {
+				sum = -1;
 				break;
 			}
 		}
 	}
 
-	private static int[] union(int from, int to, int[] parent) {
-		int x = find(from, parent);
-		int y = find(to, parent);
-		
-		if (x < y) parent[y] = x;
-		else parent[x] = y;
-		
-		return parent;
-	}
-
-	private static int find(int from, int[] parent) {
-		if (parent[from] == from) return from;
-		else {
-			 parent[from] = find(parent[from], parent);
-			return parent[from];
-		}
-		
-	}
 
 	private static void makeBridge() {
 		// 섬 내 하나의 좌표에서 오른쪽, 왼쪽 / 아래, 위로만 움직였을 때 그 거리가 2이상이고 새로운 1을 만나면 저장
@@ -175,12 +122,10 @@ public class Main {
 						// 자기 자신은 제외
 						if (curStart == k)
 							continue;
-						else if (adjMatrix[k][curStart] != 100) {
-							continue;
-						}
 						else {
 							int min = funcForBridge(i, j, curStart, k);
-							adjMatrix[curStart][k] = Math.min(min, adjMatrix[curStart][k]);	
+							
+							if (min != Integer.MAX_VALUE) graph[curStart-2].add(new Vertex(k-2, min));
 						}
 					}
 
@@ -201,7 +146,6 @@ public class Main {
 	private static int funcForBridge(int x, int y, int curStart, int target) {
 		int min = Integer.MAX_VALUE;
 
-//		System.out.println("curStart :  " + curStart + " target : " + target);
 		// 가로, 세로 확인
 		for (int i = 0; i < 4; i++) {
 			int count = 0;
@@ -209,11 +153,7 @@ public class Main {
 				int nx = x + dx[i] * m;
 				int ny = y + dy[i] * m;
 				
-				
-	
 				if (nx >= 0 && nx < N && ny >= 0 && ny < M) {
-//					System.out.println("nx : " + nx + " ny : " + ny + " map[nx][ny] : " + map[nx][ny] + " target : " + target + " count : " + count + " min : " + min );
-					
 					// 내 땅이 바로 옆에 있으면 방향 바꿔서;
 					if (map[nx][ny] == curStart)
 						break;
@@ -241,7 +181,6 @@ public class Main {
 			}
 
 		}
-//		System.out.println("x : " + x + " y : " + y + " min : " + min);
 		return min;
 
 	}
@@ -267,14 +206,5 @@ public class Main {
 
 		}
 		numberOfIsland[number] = count;
-
 	}
-
-	public static void print() {
-		for (int i = 0; i < N; i++) {
-			System.out.println(Arrays.toString(map[i]));
-		}
-		System.out.println();
-	}
-
 }
