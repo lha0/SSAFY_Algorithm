@@ -49,12 +49,6 @@ public class Solution {
 							visited[row][col] = true;
 							visited[row+1][col] = true;
 							
-//							System.out.println("plus row " + row);
-//							for (int i = 0; i < N; i++) {
-//								System.out.println(Arrays.toString(gameboard[i]));
-//							}
-//							System.out.println();
-							
 							row++;
 						}
 						//내 자리가 만약 0이라면, 땡겨 올리기
@@ -87,12 +81,6 @@ public class Solution {
 								row--;
 								continue;
 							}
-							
-//							System.out.println("zero row " + row);
-//							for (int i = 0; i < N; i++) {
-//								System.out.println(Arrays.toString(gameboard[i]));
-//							}
-//							System.out.println();
 						}
 						// 다르다면 그냥 pass 
 						else {
