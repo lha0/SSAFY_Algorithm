@@ -32,16 +32,11 @@ public class Solution {
 					dfs(i, j, visited);
 					
 					if (max < cnt) {
-//						System.out.println("max " +max + " " + cnt);
-						
 						max = cnt;
-//						System.out.println("room " + rooms[i][j] + " " + roomNum);
-						
 							roomNum = rooms[i][j];
 						
 					} 
 					else if (max  == cnt) {
-					   // System.out.println("room " + rooms[i][j] + " " + roomNum);
 						if (rooms[i][j] < roomNum) {
 							roomNum = rooms[i][j];
 						}	
@@ -64,7 +59,8 @@ public class Solution {
 			int nx = x + dx[i];
 			int ny = y + dy[i];
 			
-			if (nx >= 0 && nx < N && ny >= 0 && ny < N && !visited[nx][ny] && rooms[nx][ny] == rooms[x][y] + 1) {
+			if (nx >= 0 && nx < N && ny >= 0 && ny < N 
+					&& !visited[nx][ny] && rooms[nx][ny] == rooms[x][y] + 1) {
 				dfs(nx, ny, visited);
 				cnt++;
 			}
