@@ -45,10 +45,12 @@ public class Main {
 	private static void run() {
 		while (true) {
 			// bfs로 큰 그룹 찾기
+			// 색깔 있는 그룹 방문 표시
 			boolean[][] visited = new boolean[N][N];
 
+			// 그룹별 마킹
 			int markGroup = 1;
-
+			
 			List<int[]> groups = new ArrayList<>();
 
 			for (int i = 0; i < N; i++) {
@@ -57,6 +59,7 @@ public class Main {
 						rainbow = 0;
 						int cnt = bfs(i, j, board[i][j].color, markGroup, visited);
 
+						// 그룹 내 블록 개수가 하나 이하면 continue
 						if (cnt <= 1) {
 							markGroup++;
 							continue;
@@ -64,11 +67,6 @@ public class Main {
 
 						// 개수 세리기
 						groups.add(new int[] { markGroup, cnt, rainbow, i, j });
-//                        
-//                        for (int c = 0; c < N; c++) {
-//                            System.out.println(Arrays.toString(visited[c]));
-//                        }
-//                        System.out.println();
 
 						markGroup++;
 
@@ -100,57 +98,23 @@ public class Main {
 
 			});
 
-//			for (int i = 0; i < groups.size(); i++) {
-//				System.out.println(Arrays.toString(groups.get(i)));
-//			}
-
 			int maxGroup = groups.get(0)[0];
 			int maxCount = groups.get(0)[1];
-
-//			for (int i = 0; i < N; i++) {
-//				for (int j = 0; j < N; j++) {
-//					System.out.print(board[i][j].group + "\t");
-//				}
-//				System.out.println();
-//			}
-//			System.out.println();
 
 			// 있으면 제거
 			remove(maxGroup);
 			answer += maxCount * maxCount;
 
-//			System.out.println(maxCount + " " + maxGroup);
-//			print();
-
 			// 중력 이동
 			moveDown();
-
-//			System.out.println("move Down");
-//			print();
 
 			// 90도 반시계 회전
 			turn();
 
-//			System.out.println("turn");
-//			print();
-
 			// 중력 이동
 			moveDown();
-
-//			System.out.println("move Down 2");
-//			print();
 		}
 
-	}
-
-	private static void print() {
-		for (int i = 0; i < N; i++) {
-			for (int j = 0; j < N; j++) {
-				System.out.print(board[i][j].color + "\t");
-			}
-			System.out.println();
-		}
-		System.out.println();
 	}
 
 	private static void turn() {
@@ -177,12 +141,15 @@ public class Main {
 		// 하나의 열마다 계산
 		for (int c = 0; c < N; c++) {
 			for (int r = 0; r < N; r++) {
+				// 검은 블록
 				if (board[r][c].color == -1)
 					continue;
 
+				// 무지개 이상의 블록
 				if (board[r][c].color >= 0) {
 					int sr = r;
 					int len = 1;
+					// 내려와야할 블록들 길이 측정
 					while (r + 1 < N) {
 						if (board[r + 1][c].color >= 0) {
 							len++;
@@ -191,6 +158,7 @@ public class Main {
 							break;
 					}
 
+					// 내려가야 할 빈칸 위치랑 길이 측정
 					int findIdx = r + 1;
 					int find = 0;
 					while (findIdx < N) {
@@ -207,8 +175,6 @@ public class Main {
 						}
 					}
 
-//                    System.out.println("c" + c+ " len " + len + " find " + find + " r " + r + " findIdx " + findIdx);
-
 					if (find > 0) {
 						if (len == 1) {
 							int temp = board[findIdx][c].color;
@@ -221,13 +187,8 @@ public class Main {
 								findIdx--;
 								r--;
 								len--;
-
-								if (r < 0)
-									r = 0;
 							}
-//                            board[r][c].color = -2;
 						}
-
 					}
 				}
 			}
@@ -235,16 +196,19 @@ public class Main {
 	}
 
 	private static void remove(int maxGroup) {
+		// 삭제하기 전 다시 bfs
+		// 삭제해야하는 group에 속하는 블록들을 다시 측정
+		// 그룹 찾을 때 후순위에 있는 그룹으로 내 그룹의 0이 재마킹 됐을 수 있기 때문
 		Queue<Block> queue = new ArrayDeque<Block>();
 		boolean[][] bfsV = new boolean[N][N];
 		List<int[]> removeList = new ArrayList();
-		
+
 		L: for (int i = 0; i < N; i++) {
 			for (int j = 0; j < N; j++) {
 				if (board[i][j].group == maxGroup && board[i][j].color >= 1) {
 
 					queue.offer(new Block(i, j, board[i][j].color, board[i][j].group));
-					removeList.add(new int[] {i, j});
+					removeList.add(new int[] { i, j });
 					bfsV[i][j] = true;
 
 					while (!queue.isEmpty()) {
@@ -258,7 +222,7 @@ public class Main {
 									&& (board[nx][ny].color == cur.color || board[nx][ny].color == 0)) {
 								bfsV[nx][ny] = true;
 								queue.offer(new Block(nx, ny, cur.color, maxGroup));
-								removeList.add(new int[] {nx, ny});
+								removeList.add(new int[] { nx, ny });
 							}
 						}
 
@@ -266,61 +230,57 @@ public class Main {
 				}
 			}
 		}
-		
+
 		for (int idx = 0; idx < removeList.size(); idx++) {
 			int rx = removeList.get(idx)[0];
 			int ry = removeList.get(idx)[1];
-			
+
 			board[rx][ry].x = -1;
 			board[rx][ry].y = -1;
 			board[rx][ry].color = -2;
 			board[rx][ry].group = 0;
 		}
-
-		
 	}
 
 	private static int bfs(int r, int c, int color, int markGroup, boolean[][] visited) {
-        Queue<Block> queue = new ArrayDeque<Block>();
-        boolean[][] bfsV = new boolean[N][N];
-        queue.offer(new Block(r, c, color, markGroup));
+		Queue<Block> queue = new ArrayDeque<Block>();
+		boolean[][] bfsV = new boolean[N][N];			// 0을 포함하여 해당 그룹에 속하는 애들 방문 처리
+		queue.offer(new Block(r, c, color, markGroup));
 
-        board[r][c].group = markGroup;
-        bfsV[r][c] = true;
-        visited[r][c] = true;
-        int cnt = 1;
+		board[r][c].group = markGroup;
+		bfsV[r][c] = true;
+		visited[r][c] = true;
+		int cnt = 1;
 
-        while (!queue.isEmpty()) {
-            Block cur = queue.poll();
+		while (!queue.isEmpty()) {
+			Block cur = queue.poll();
 
-            for (int i = 0; i < 4; i++) {
-                int nx = cur.x + dx[i];
-                int ny = cur.y + dy[i];
+			for (int i = 0; i < 4; i++) {
+				int nx = cur.x + dx[i];
+				int ny = cur.y + dy[i];
 
-                if (nx >= 0 && nx < N && ny >= 0 && ny < N && !bfsV[nx][ny]
-                        && (board[nx][ny].color == cur.color || board[nx][ny].color == 0)) {
+				if (nx >= 0 && nx < N && ny >= 0 && ny < N && !bfsV[nx][ny]
+						&& (board[nx][ny].color == cur.color || board[nx][ny].color == 0)) {
 
-                    bfsV[nx][ny] = true;
-                    if (board[nx][ny].color == cur.color) visited[nx][ny] = true;
-                    
-                    board[nx][ny].group = markGroup;
-                    cnt++;
-                    queue.offer(new Block(nx, ny, cur.color, markGroup));
+					// 같은 그룹이면 visited
+					bfsV[nx][ny] = true;
+					// 같은 색일 경우만 visited도 마킹
+					if (board[nx][ny].color == cur.color)
+						visited[nx][ny] = true;
+					// 무지개 개수
+					if (board[nx][ny].color == 0)
+						rainbow++;
 
-                    if (board[nx][ny].color == 0)
-                        rainbow++;
-                }
-            }
-        }
+					board[nx][ny].group = markGroup;
+					cnt++;
+					queue.offer(new Block(nx, ny, cur.color, markGroup));
 
-        return cnt;
-    }
+					
+				}
+			}
+		}
+
+		return cnt;
+	}
 
 }
-
-/*
- * input 5 3 0 0 0 0 1 -1 -1 0 -1 0 -1 -1 3 -1 -1 -1 -1 0 -1 -1 0 0 2 0 0
- * 
- * output 74
- */
-
