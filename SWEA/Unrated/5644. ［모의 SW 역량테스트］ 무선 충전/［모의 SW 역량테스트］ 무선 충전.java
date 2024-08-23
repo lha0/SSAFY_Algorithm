@@ -3,7 +3,6 @@ import java.util.*;
 
 public class Solution {
 	static int T, M, A, sameNetwork;
-	static int[][] MAP = new int[11][11];
 	static int[][] move;
 	static List<BC> network, possible1, possible2;
 
@@ -92,12 +91,7 @@ public class Solution {
 		for (int m = -1; m < M; m++) {
 			if (m != -1)
 				userMove(m);
-
-//			System.out.println("the result of move");
-//			System.out.println("User 1 position ( " + user1.x + ", " + user1.y + ") charge : " + user1.charge);
-//			System.out.println("User 2 position ( " + user2.x + ", " + user2.y + ") charge : " + user2.charge);
-//
-//			System.out.println("############## m : " + m + "##############");
+			
 			// 하나의 비콘마다 각 유저가 쓸 수 있는 경우를 모두 포함해두기
 			possible1 = new ArrayList<BC>();
 			possible2 = new ArrayList<BC>();
@@ -105,21 +99,9 @@ public class Solution {
 			// 현재 위치에서 충전
 			// 유저들이 같은 위치에 있으면
 			pos();
-			
+
 			Collections.sort(possible1);
 			Collections.sort(possible2);
-
-//			System.out.println("possible1");
-//			for (int i = 0; i < possible1.size(); i++) {
-//				System.out.println(possible1.get(i).num);
-//
-//			}
-//
-//			System.out.println("possible2");
-//			for (int i = 0; i < possible2.size(); i++) {
-//				System.out.println(possible2.get(i).num);
-//				
-//			}
 
 			// 하나라도 같은 네트워크가 있는지 확인
 			int minLen = 0;
@@ -188,7 +170,7 @@ public class Solution {
 							user2.charge += possible2.get(0).p;
 						}
 					}
-					
+
 				}
 				// 같은 네트워크 위치가 2가 넘으면 그냥 각자 첫번째꺼 쓰면 됨
 				else {
@@ -202,11 +184,6 @@ public class Solution {
 				user1.charge += possible1.get(0).p;
 				user2.charge += possible2.get(0).p;
 			}
-
-//			System.out.println("The result of Charge ");
-//			System.out.println("User 1 charge : " + user1.charge);
-//			System.out.println("User 2 charge : " + user2.charge);
-//			System.out.println("-------------------------------------");
 		}
 
 	}
@@ -284,10 +261,6 @@ public class Solution {
 		for (int a = 0; a < A; a++) {
 			BC cur = network.get(a); // x, y, c, p
 
-//			System.out.println("a : " + a);
-//			System.out.println("user1 " + user1.x + " " + cur.x + " " + user1.y + " " + cur.y + " " + cur.c + " " + cur.p + "cur Num :" + cur.num);
-//			System.out.println("user2 " + user2.x + " " + cur.x + " " + user2.y + " " + cur.y + " " + cur.c + " " + cur.p + "cur Num :" + cur.num);
-
 			// 범위 내에 있으면, 리스트에 추가
 			if (Math.abs(cur.x - user1.x) + Math.abs(cur.y - user1.y) <= cur.c)
 				possible1.add(cur);
@@ -296,16 +269,6 @@ public class Solution {
 		}
 
 		return;
-	}
-
-	private static void print() {
-		for (int i = 0; i < 11; i++) {
-			for (int j = 0; j < 11; j++) {
-				System.out.print(MAP[i][j] + "\t");
-			}
-			System.out.println();
-		}
-		System.out.println();
 	}
 
 }
