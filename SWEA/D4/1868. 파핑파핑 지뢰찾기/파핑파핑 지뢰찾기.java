@@ -114,11 +114,4 @@ public class Solution {
 		}
 	}
 	
-	public static void print(int[][] arr) {
-		for (int i =0 ; i < N; i++) {
-			System.out.println(Arrays.toString(arr[i]));
-		}
-		System.out.println();
-	}
-	
 }
