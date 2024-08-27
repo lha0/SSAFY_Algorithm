@@ -31,7 +31,7 @@ public class Solution {
 				for (int j = 0; j < N; j++) {
 					board[i][j] = Integer.parseInt(st.nextToken());
 					
-					// 끝에있는 코어 제외 개수 세리기
+					// 끝에있는 코어 제외 개수 세리기, 좌표 저장
 					if (i != 0 && i != N-1 && j != 0 && j != N-1 && board[i][j] == 1) {
 						core++;
 						coord.add(new int[] {i, j});
@@ -39,25 +39,13 @@ public class Solution {
 				}
 			}
 			
-			Collections.sort(coord, new Comparator<int[]>() {
-
-				@Override
-				public int compare(int[] o1, int[] o2) {
-					return Math.abs(o2[0] - o2[1]) - Math.abs(o1[0] - o1[1]);
-				}
-				
-			});
-			
+			// 좌표마다 부분조합 정하기
 			comb(0, new boolean[coord.size()]);
-			
-			
 			
 			if (min == Integer.MAX_VALUE) min = 0;
 			
 			bw.write("#" + tc + " " + min + "\n");
-			
 		}
-		
 		
 		bw.flush();
 		bw.close();
@@ -74,8 +62,8 @@ public class Solution {
 				}
 			}
 			
+			//부분조합별로 코어 연결해보기
 			run(0, 0, 0);
-			
 			return;
 		}
 		
@@ -85,11 +73,7 @@ public class Solution {
 		comb(k+1, sel);
 	}
 
-
-	
-	
 	private static void run(int idx, int core, int distResult) {
-//		System.out.println(max + " " + core + " " + min + " " + distResult);
 		//기존 맥스값보다 더 많은 코어를 연결하면, max랑 min 초기화
 		if (max < core) {
 			max = core;
@@ -106,24 +90,14 @@ public class Solution {
 		int x = coo[0];
 		int y = coo[1];
 		
-		
 		for (int dir = 0 ; dir < 4; dir++) {
 			// 해당 방향으로 나아갈 수 있으면
 			if (check(x, y, dir)) {
-//				System.out.println("marking");
 				int result = marking(x, y, dir);
-//				print();
 				run(idx+1, core+1, distResult + result);
 				unmarking(x, y, dir);
 			}
 		}
-	}
-
-	private static void print() {
-		for (int i =0 ; i < N; i++) {
-			System.out.println(Arrays.toString(board[i]));
-		}
-		System.out.println();
 	}
 
 	private static void unmarking(int x, int y, int dir) {
