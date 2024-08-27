@@ -1,131 +1,184 @@
-
+import java.io.*;
 import java.util.*;
 
-class Process {
-
-	int r;
-
-	int c;
-
-	Process(int r, int c) {
-
-		this.r = r;
-
-		this.c = c;
-
-	}
-
-}
-
 public class Solution {
+	static int T, N, core;
+	static int min, max;
+	static int[][] board;
+	static List<int[]> coord;
+	static ArrayList<int[]> combList;
+	
+	static int[] dx = {0, 1, 0, -1};
+	static int[] dy = {1, 0, -1, 0};
 
-	static int n;
-
-	static int[] rr = { -1, 1, 0, 0 };
-
-	static int[] cc = { 0, 0, -1, 1 };
-
-	static int[][] map;
-
-	static ArrayList<Process> list;
-
-	static int min, procCnt;
-
-	public static void main(String[] args) {
-
-		Scanner sc = new Scanner(System.in);
-
-		int T = sc.nextInt();
-
-		for (int tc = 1; tc <= T; tc++) {
-			n = sc.nextInt();
-			map = new int[n][n];
-			min = Integer.MAX_VALUE;
-			procCnt = 0;
-			list = new ArrayList<>(); // 새로운 테스트 케이스를 위한 초기화
-
-			for (int i = 0; i < n; i++) {
-				for (int j = 0; j < n; j++) {
-					int input = sc.nextInt();
-					if (input == 1) {
-						if (i == 0 || j == 0 || i == n - 1 || j == n - 1) {
-							map[i][j] = 3; // 가장자리에 있는 코어는 전원이 연결된 상태로 간주
-						} else {
-							map[i][j] = 2; // 내부 코어로 표시
-							list.add(new Process(i, j));
-						}
-					} else {
-						map[i][j] = input;
+	public static void main(String[] args) throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+		
+		T = Integer.parseInt(br.readLine().split(" ")[0]);
+		
+		for (int tc = 1; tc <= T; tc++) {	
+			N = Integer.parseInt(br.readLine().split(" ")[0]);
+			
+			 min = Integer.MAX_VALUE;
+			 max = 0;
+			 coord = new ArrayList<>();
+			 core = 0;
+			
+			board = new int[N][N];
+			for (int i = 0; i < N; i++) {
+				StringTokenizer st = new StringTokenizer(br.readLine());
+				for (int j = 0; j < N; j++) {
+					board[i][j] = Integer.parseInt(st.nextToken());
+					
+					// 끝에있는 코어 제외 개수 세리기
+					if (i != 0 && i != N-1 && j != 0 && j != N-1 && board[i][j] == 1) {
+						core++;
+						coord.add(new int[] {i, j});
 					}
 				}
 			}
+			
+			Collections.sort(coord, new Comparator<int[]>() {
 
-			rec(0, 0, 0);
-			System.out.println("#" + tc + " " + min);
+				@Override
+				public int compare(int[] o1, int[] o2) {
+					return Math.abs(o2[0] - o2[1]) - Math.abs(o1[0] - o1[1]);
+				}
+				
+			});
+			
+			comb(0, new boolean[coord.size()]);
+			
+			
+			
+			if (min == Integer.MAX_VALUE) min = 0;
+			
+			bw.write("#" + tc + " " + min + "\n");
+			
 		}
-
+		
+		
+		bw.flush();
+		bw.close();
+		br.close();
 	}
+	
 
-	private static void rec(int idx, int proc, int len) {
-
-		// basis part
-
-		if (idx == list.size()) {
-			if (proc > procCnt) {
-				procCnt = proc;
-				min = len;
-			} else if (proc == procCnt) {
-				min = Math.min(len, min);
+	private static void comb(int k, boolean[] sel) {
+		if (k == sel.length) {
+			combList = new ArrayList<>();
+			for (int i = 0; i < sel.length; i++) {
+				if (sel[i]) {
+					combList.add(coord.get(i));	
+				}
 			}
+			
+			run(0, 0, 0);
+			
 			return;
 		}
-
-		Process p = list.get(idx);
-		int r = p.r;
-		int c = p.c;
-		for (int i = 0; i < 4; i++) { // 4방탐색
-			if (checkLine(r, c, i)) { // 선 그리기 가능한지 조건검사 선그리기를 하ㅁ
-				int line = drawLine(r, c, i, 3); // 전선 설치
-				rec(idx + 1, proc + 1, len + line); // 다음 재귀 호출
-				drawLine(r, c, i, 0); // 전선 제거
-
-			}
-
-		}
-		// 이 코어를 연결하지 않고 다음 코어로 넘어가는 경우
-		rec(idx + 1, proc, len); // 아무것도 설치 하지 않을 경우 확인
-
+		
+		sel[k] = true;
+		comb(k+1, sel);
+		sel[k] = false;
+		comb(k+1, sel);
 	}
 
-	private static int drawLine(int r, int c, int k, int value) {
-		// check 검사를 하면 무조건 그림을 그린다.
-		int nr = r + rr[k];
-		int nc = c + cc[k];
-		// nr , nc
-		int count = 0;
-		// 0~n 사이 조건 검사
-		while (nr >= 0 && nr < n && nc >= 0 && nc < n) {
-			map[nr][nc] = value;
-			count++;
 
-			nr += rr[k];
-			nc += cc[k];
+	
+	
+	private static void run(int idx, int core, int distResult) {
+//		System.out.println(max + " " + core + " " + min + " " + distResult);
+		//기존 맥스값보다 더 많은 코어를 연결하면, max랑 min 초기화
+		if (max < core) {
+			max = core;
+			min = distResult;
+		} else if (max == core) {
+			min = Math.min(min, distResult);
 		}
-		return count;
+		
+		if (idx == combList.size()) {
+			return;
+		}
+		
+		int[] coo = combList.get(idx);
+		int x = coo[0];
+		int y = coo[1];
+		
+		
+		for (int dir = 0 ; dir < 4; dir++) {
+			// 해당 방향으로 나아갈 수 있으면
+			if (check(x, y, dir)) {
+//				System.out.println("marking");
+				int result = marking(x, y, dir);
+//				print();
+				run(idx+1, core+1, distResult + result);
+				unmarking(x, y, dir);
+			}
+		}
 	}
 
-	private static boolean checkLine(int r, int c, int k) {
-		int nr = r + rr[k];
-		int nc = c + cc[k];
-		// nr , nc
+	private static void print() {
+		for (int i =0 ; i < N; i++) {
+			System.out.println(Arrays.toString(board[i]));
+		}
+		System.out.println();
+	}
 
-		// 0~n 사이 조건 검사
-		while (nr >= 0 && nr < n && nc >= 0 && nc < n) {
-			if (map[nr][nc] != 0) {
-				return false;
+	private static void unmarking(int x, int y, int dir) {
+		int mult = 1;
+		while (true) {
+			int nx = x + dx[dir] * mult;
+			int ny = y + dy[dir] * mult;
+			
+			if (nx >= 0 && nx < N && ny >= 0 && ny < N) {
+				if (board[nx][ny] == 1) {
+					board[nx][ny] = 0;
+					mult++;
+				}
+			} else {
+				break;
 			}
-			nr += rr[k];
-			nc += cc[k];
+		}
+	}
+
+	private static int marking(int x, int y, int dir) {
+		int mult = 1;
+		int dist = 0;
+		while (true) {
+			int nx = x + dx[dir] * mult;
+			int ny = y + dy[dir] * mult;
+			
+			if (nx >= 0 && nx < N && ny >= 0 && ny < N) {
+				if (board[nx][ny] == 0) {
+					board[nx][ny] = 1;
+					mult++;
+					dist++;
+				}
+			} else {
+				break;
+			}
+		}
+		return dist;
+	}
+
+	private static boolean check(int x, int y, int dir) {
+		//dir 방향으로 뻗어나갈 수 있는지 체크
+		int mult = 1;
+		while (true) {
+			int nx = x + dx[dir] * mult;
+			int ny = y + dy[dir] * mult;
+			
+			if (nx >= 0 && nx < N && ny >= 0 && ny < N) {
+				if (board[nx][ny] == 0) {
+					mult++;
+				} else {
+					return false;
+				}
+			} else {
+				break;
+			}
 		}
 		return true;
 	}
