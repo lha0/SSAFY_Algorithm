@@ -16,64 +16,61 @@ public class Main {
 			StringTokenizer st = new StringTokenizer(br.readLine());
 			for (int j = 0; j < 9; j++) {
 				board[i][j] = Integer.parseInt(st.nextToken());
+				
+				if (board[i][j] == 0) {
+					blank.add(new int[] {i, j});
+					total++;
+				}
 			}
 		}
 		br.close();
 
 		run(0, 0, bw);
 	}
-
-	private static void run(int x, int y, BufferedWriter bw) throws IOException {
-//		System.out.println(x + " " + y);
-
-		if (x == 8 && y == 9) {
-			for (int i = 0; i < 9; i++) {
-				for (int j = 0; j < 9; j++) {
-					bw.write(board[i][j] + " ");
-				}
-				bw.write("\n");
+	
+	private static void run(int idx, int cnt, BufferedWriter bw) throws IOException {
+	
+	//print();
+	if (cnt == total) {
+		for (int i = 0; i < 9; i++) {
+			for (int j = 0; j < 9; j++) {
+				bw.write(board[i][j] + " ");
 			}
-
-			bw.flush();
-			bw.close();
-
-			System.exit(0);
+			bw.write("\n");
 		}
-
-		if (y == 9) {
-			run(x + 1, 0, bw);
-			return;
-		}
-
-		if (board[x][y] != 0) {
-			run(x, y + 1, bw);
-			return;
-		}
-
-//		 print();
-
-		// 숫자 포함되어 있는지 확인
-		boolean[] nums = new boolean[10];
-
-		// 가로 확인
-		checkRow(x, y, nums);
-
-		// 세로 확인
-		checkCol(x, y, nums);
-
-		// 같은 칸 확인
-		checkBox(x, y, nums);
-
-		// nums 값이 false인 애들 하나씩 넣고 다음 칸으로
-		for (int i = 1; i < nums.length; i++) {
-			if (!nums[i]) {
-				board[x][y] = i;
-				run(x, y + 1, bw);
-				board[x][y] = 0;
-			}
-		}
-
+		
+		bw.flush();
+		bw.close();
+		
+		System.exit(0);
 	}
+	
+	int[] cur = blank.get(idx);
+	int x = cur[0];
+	int y = cur[1];
+	
+	// 숫자 포함되어 있는지 확인
+	boolean[] nums = new boolean[10];
+	
+	// 가로 확인
+	checkRow(x, y, nums);
+	
+	// 세로 확인
+	checkCol(x, y, nums);
+	
+	// 같은 칸 확인
+	checkBox(x, y, nums);
+	
+	//nums 값이 false인 애들 하나씩 넣고 다음 칸으로
+	for (int i = 1; i < nums.length; i++) {
+		if (!nums[i]) {
+			board[x][y] = i;
+			run(idx+1, cnt+1, bw);
+			board[x][y] = 0;
+		}
+	}
+	
+}
 
 	private static void print() {
 		for (int i = 0; i < 9; i++) {
