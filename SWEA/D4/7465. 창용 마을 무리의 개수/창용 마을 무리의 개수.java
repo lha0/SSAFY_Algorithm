@@ -1,0 +1,63 @@
+import java.io.*;
+import java.util.*;
+
+public class Solution {
+	static int T, answer, N, M;
+	static ArrayList<Integer>[] adjList;
+	static int[] parents, sizeList;
+
+	public static void main(String[] args) throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+
+		T = Integer.parseInt(br.readLine().split(" ")[0]);
+
+		for (int tc = 1; tc <= T; tc++) {
+			StringTokenizer st = new StringTokenizer(br.readLine());
+			N = Integer.parseInt(st.nextToken());
+			M = Integer.parseInt(st.nextToken());
+			answer = N;
+			parents = new int[N + 1];
+			
+			make();
+
+			for (int i = 0; i < M; i++) {
+				StringTokenizer sts = new StringTokenizer(br.readLine());
+				int A = Integer.parseInt(sts.nextToken());
+				int B = Integer.parseInt(sts.nextToken());
+
+				union(A, B);
+			}
+
+			bw.write("#" + tc + " " + answer + "\n");
+		}
+
+		bw.flush();
+		bw.close();
+		br.close();
+	}
+
+	private static int find(int i) {
+		if (i == parents[i])
+			return i;
+		else
+			return parents[i] = find(parents[i]);
+	}
+
+	private static void union(int i, int child) {
+		int aRoot = find(i);
+		int bRoot = find(child);
+		
+		if (aRoot != bRoot) {
+			answer--;
+			parents[bRoot] = aRoot;
+		}
+	}
+
+	private static void make() {
+		for (int i = 1; i <= N; i++) {
+			parents[i] = i;
+		}
+	}
+
+}
