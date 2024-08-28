@@ -20,13 +20,28 @@ public class Solution {
 			parents = new int[N + 1];
 			
 			make();
+			
+			adjList = new ArrayList[N + 1];
+			for (int i = 0; i < N + 1; i++) {
+				adjList[i] = new ArrayList<>();
+			}
 
 			for (int i = 0; i < M; i++) {
 				StringTokenizer sts = new StringTokenizer(br.readLine());
 				int A = Integer.parseInt(sts.nextToken());
 				int B = Integer.parseInt(sts.nextToken());
 
-				union(A, B);
+				adjList[A].add(B);
+				
+//				union(A, B);
+			}
+			
+			for (int i = 1; i <= N; i++) {
+				ArrayList<Integer> start = adjList[i];
+
+				for (int child : start) {
+					union(i, child);
+				}
 			}
 			
 			answer = 0;
