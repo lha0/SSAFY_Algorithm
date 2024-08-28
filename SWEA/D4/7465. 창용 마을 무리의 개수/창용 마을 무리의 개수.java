@@ -16,7 +16,7 @@ public class Solution {
 			StringTokenizer st = new StringTokenizer(br.readLine());
 			N = Integer.parseInt(st.nextToken());
 			M = Integer.parseInt(st.nextToken());
-			answer = N;
+			
 			parents = new int[N + 1];
 			
 			make();
@@ -27,6 +27,11 @@ public class Solution {
 				int B = Integer.parseInt(sts.nextToken());
 
 				union(A, B);
+			}
+			
+			answer = 0;
+			for (int i = 1; i <= N; i++) {
+				if (i == parents[i]) answer++;
 			}
 
 			bw.write("#" + tc + " " + answer + "\n");
@@ -48,9 +53,10 @@ public class Solution {
 		int aRoot = find(i);
 		int bRoot = find(child);
 		
-		if (aRoot != bRoot) {
-			answer--;
+		if (aRoot < bRoot) {
 			parents[bRoot] = aRoot;
+		} else {
+			parents[aRoot] = bRoot;
 		}
 	}
 
