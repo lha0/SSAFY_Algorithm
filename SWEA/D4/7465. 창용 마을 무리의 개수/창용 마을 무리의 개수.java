@@ -36,6 +36,9 @@ public class Solution {
 //				union(A, B);
 			}
 			
+			sizeList = new int[N + 1];
+			Arrays.fill(sizeList, -1);
+			
 			for (int i = 1; i <= N; i++) {
 				ArrayList<Integer> start = adjList[i];
 
@@ -44,9 +47,11 @@ public class Solution {
 				}
 			}
 			
+//			System.out.println(Arrays.toString(sizeList));
+			
 			answer = 0;
 			for (int i = 1; i <= N; i++) {
-				if (i == parents[i]) answer++;
+				if (sizeList[i] < 0) answer++;
 			}
 
 			bw.write("#" + tc + " " + answer + "\n");
@@ -68,10 +73,17 @@ public class Solution {
 		int aRoot = find(i);
 		int bRoot = find(child);
 		
+		if (aRoot == bRoot) return;
+		
 		if (aRoot < bRoot) {
 			parents[bRoot] = aRoot;
+			sizeList[aRoot] += sizeList[bRoot];
+			sizeList[bRoot] = 0;
+			
 		} else {
 			parents[aRoot] = bRoot;
+			sizeList[bRoot] += sizeList[aRoot];
+			sizeList[aRoot] = 0;
 		}
 	}
 
