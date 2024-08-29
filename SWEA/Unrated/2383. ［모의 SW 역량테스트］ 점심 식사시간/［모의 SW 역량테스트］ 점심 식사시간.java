@@ -79,7 +79,6 @@ public class Solution {
 		br.close();
 	}
 
-	static int first = 0;
 	private static void run(int k, boolean[] sel) {
 		if (k == sel.length) {
 			Queue<Person> stair1 = new PriorityQueue<Person>();
@@ -93,27 +92,19 @@ public class Solution {
 					
 					int distCal = Math.abs(p.x - s.x) + Math.abs(p.y - s.y);
 					
-//					System.out.println("true" + distCal);
-					
 					stair1.add(new Person(p.x, p.y, distCal, 0));
 				} else {
 					Stair s = stairList[1];
 					Person p = personList.get(i);
 					
 					int distCal = Math.abs(p.x - s.x) + Math.abs(p.y - s.y);
-					
-//					System.out.println("false" + distCal);
-					
+				
 					stair2.add(new Person(p.x, p.y, distCal, 0));
 				}
 			}
 			
-//			System.out.println(Arrays.toString(sel));
-			
 			move(stair1, stair2);
-//			first = 1;
-			
-//			System.out.println("######### min " + min);
+
 			return;
 		}
 		
@@ -132,7 +123,6 @@ public class Solution {
 		
 		int time = 0;
 		if (stair1.size() != 0 && stair2.size() != 0) {
-//			System.out.println("stair1 " + stair1.peek().dist + "stair2 " + stair2.peek().dist);
 			time = stair1.peek().dist <= stair2.peek().dist ? stair1.peek().dist : stair2.peek().dist;
 		} else if (stair1.size() != 0) {
 			time = stair1.peek().dist;
@@ -143,23 +133,12 @@ public class Solution {
 		boolean start = true;
 		
 		while (true) {
-//			if (first == 0 && time < 20 && min == 21) {
-//				System.out.println(time);
-//				System.out.println("stair1 " + stair1.size() + " stair2 " + stair2.size());
-//				System.out.println("stair1Down " + stair1Down.size() + " stair2Down " + stair2Down.size());
-//				
-//			}
-
 			//계단 1
 			//다 내려갔는지 체크
-			
 			for (int i =0 ; i < stair1Down.size(); i++) {
-//				if (time < 10)
-//					System.out.println("peek time  " + stair1Down.peek().downEnd + " " + time );
 				if (stair1Down.peek().downEnd == time) {
 					stair1Down.poll();
 					i--;
-//					System.out.println("poll "  + stair1Down.size());
 				}
 			}
 			
@@ -167,10 +146,7 @@ public class Solution {
 			for (int i = 0; i < stair1.size(); i++) {
 				//도착했고, 계단 내 인원수가 len보다 작으면
 				if (stair1.peek().dist == time && stair1Down.size() < 3) {
-					
 					Person p = stair1.poll();
-//					System.out.println(" 도착했는데 인원수가 적어 " + p.dist + " " + time + stairList[0].len + 1);
-					
 					stair1Down.add(new Person(p.x, p.y, p.dist, time + stairList[0].len + 1));
 					i--;
 				} 
@@ -178,8 +154,6 @@ public class Solution {
 				else if (stair1.peek().dist < time && stair1Down.size() < 3) {
 					
 					Person p = stair1.poll();
-					
-//					System.out.println(" 대기하다가 들어가 " + p.dist + " " + time + stairList[0].len);
 					stair1Down.add(new Person(p.x, p.y, p.dist, time + stairList[0].len));
 					i--;
 				}
@@ -198,16 +172,9 @@ public class Solution {
 			
 			for (int i = 0; i < stair2.size(); i++) {
 				//도착했고, 계단 내 인원수가 len보다 작으면
-				
-//				if (time < 10) {
-//					System.out.println(i);
-//					System.out.println("stair2 " + stair2.peek().dist + " " + time);
-//				}
-				
+
 				if (stair2.peek().dist == time && stair2Down.size() < 3) {
 					Person p = stair2.poll();
-//					System.out.println("2 도착했는데 인원수가 적어 " + p.dist + " " + time + stairList[0].len + 1);
-					
 					stair2Down.add(new Person(p.x, p.y, p.dist, time + stairList[1].len + 1));
 					i--;
 				} 
@@ -215,12 +182,10 @@ public class Solution {
 				//대기 중이다가 사람 빠져서 들어갈 수 있으면
 				else if (stair2.peek().dist < time && stair2Down.size() < 3) {
 					Person p = stair2.poll();
-//					System.out.println(" 대기하다가 들어가 " + p.dist + " " + time + stairList[0].len);
 					stair2Down.add(new Person(p.x, p.y, p.dist, time + stairList[1].len));
 					i--;
 				}
 			}
-			
 			
 			time++;
 
