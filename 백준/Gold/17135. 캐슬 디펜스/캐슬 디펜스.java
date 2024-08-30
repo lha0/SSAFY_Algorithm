@@ -1,127 +1,196 @@
+
 import java.io.*;
 import java.util.*;
 
 public class Main {
-	static int N, M, D;
-	static int Ans = Integer.MIN_VALUE;
-	static ArrayList<Enemy> enemys = new ArrayList<>();
+	static int N, M, D, answer, max;
+	static List<Enemy> enemyList;
 
-	static class Enemy {
-		int r, c;
+	static class Enemy implements Comparable<Enemy> {
+		int x, y;
 
-		Enemy(int r, int c) {
-			this.r = r;
-			this.c = c;
+		Enemy(int x, int y) {
+			this.x = x;
+			this.y = y;
 		}
+
+		// x가 큰 순서대로 정렬 (map 가장 아래에 위치한 적), 같다면 y가 왼쪽
+		@Override
+		public int compareTo(Enemy o) {
+			return this.x == o.x ? this.y - o.y : o.x - this.x;
+		}
+
+		@Override
+		public String toString() {
+			return "Enemy [x=" + x + ", y=" + y + "] \n";
+		}
+		
+		
 	}
 
 	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 
-		String[] input = br.readLine().split(" ");
-		N = Integer.parseInt(input[0]);
-		M = Integer.parseInt(input[1]);
-		D = Integer.parseInt(input[2]);
+		StringTokenizer st = new StringTokenizer(br.readLine());
+		N = Integer.parseInt(st.nextToken());
+		M = Integer.parseInt(st.nextToken());
+		D = Integer.parseInt(st.nextToken());
 
-		for (int r = 0; r < N; r++) {
-			String[] line = br.readLine().split(" ");
-			for (int c = 0; c < M; c++) {
-				if (Integer.parseInt(line[c]) == 1)
-					enemys.add(new Enemy(r, c));
+		max = 0;
+
+		enemyList = new ArrayList<Enemy>();
+
+		for (int i = 0; i < N; i++) {
+			StringTokenizer sts = new StringTokenizer(br.readLine());
+
+			for (int j = 0; j < M; j++) {
+				int input = Integer.parseInt(sts.nextToken());
+
+				if (input == 1) {
+					enemyList.add(new Enemy(i, j));
+				}
 			}
 		}
-		/*
-		 * solving
-		 * 
-		 * 궁수의 위치를 정한다 (조합)
-		 */
-		combination(0, 0, new int[3]);
 
-		bw.write(Ans + "\n");
+		Collections.sort(enemyList);
+
+		// 궁수 자리 부분집합
+		power(0, new boolean[M]);
+
+		bw.write(max + "\n");
 		bw.flush();
 		bw.close();
 		br.close();
-
 	}
 
-	public static void combination(int idx, int k, int[] sel) {
-		if (k == sel.length) {
-			// 궁수 위치를 다 뽑으면, 적을 죽이자
-			// 한 판마다 리스트를 복사해서 쓴다
-			ArrayList<Enemy> temp = new ArrayList<>();
-			for (int i = 0; i < enemys.size(); i++) {
-				Enemy e = enemys.get(i);
-				temp.add(new Enemy(e.r, e.c));
+	private static void power(int idx, boolean[] sel) {
+		if (idx == sel.length) {
+			int num = 0; // 궁수 몇 명인지
+			for (int i = 0; i < sel.length; i++) {
+				if (sel[i])
+					num++;
 			}
-			int cnt = 0;
-			// temp에 있는 적을 죽이자
-			while (temp.size() > 0) {
-				ArrayList<Enemy> deathnote = new ArrayList<>();
-				for (int i = 0; i < 3; i++) {
-					// i번째 궁수가 화살을 쏜다
-					int minD = Integer.MAX_VALUE;
-					int minC = M;
-					int minIdx = -1;
 
-					for (int j = 0; j < temp.size(); j++) {
-						Enemy en = temp.get(j);
+			// enemyList 복사
+			ArrayList<Enemy> copyEnemy = new ArrayList<Enemy>();
+			for (int i = 0; i < enemyList.size(); i++) {
+				Enemy cur = enemyList.get(i);
+				copyEnemy.add(new Enemy(cur.x, cur.y));
+			}
+			
+			Collections.sort(copyEnemy);
+			
+//			System.out.println("궁사 위치 " + Arrays.toString(sel));
+			
+			answer = 0;
+			// 세 명이면 적 죽이러
+			if (num == 3)
+				kill(sel, copyEnemy);
 
-						int dist = Math.abs(N - en.r) + Math.abs(sel[i] - en.c);
+			max = Math.max(max, answer);
 
-						// 나의 사정거리 안에 있나
-						if (dist <= D) {
-							// 거리가 가까운
-							if (minD > dist) {
-								minD = dist;
-								minC = en.c;
-								minIdx = j;
-							} else if (minD == dist) {
-								// 거리는 같은데 왼쪽에 있는거
-								if (minC > en.c) {
-									minD = dist;
-									minC = en.c;
-									minIdx = j;
-								}
-							}
-						}
-
-					} // 모든 적을 검사
-					if (minIdx != -1) {
-						deathnote.add(temp.get(minIdx));
-
-					}
-				} // 다음 궁수 \
-					// 궁구들이 화살을 다 쏨
-					// deathnote에 있는 적들 삭제
-				for (int i = 0; i < deathnote.size(); i++) {
-					for (int j = 0; j < temp.size(); j++) {
-						if (deathnote.get(i) == temp.get(j)) {
-							temp.remove(j--);
-							cnt++;
-						}
-					}
-				}
-
-				// 1보 전진
-				for (int i = 0; i < temp.size(); i++) {
-					temp.get(i).r++;
-					if (temp.get(i).r == N) {
-						temp.remove(i--);
-					}
-				}
-			} // end of while
-			Ans = Math.max(Ans, cnt);
+			// 아니면 그냥 return
 			return;
 		}
 
-		if (idx == M) {
-			return;
+		sel[idx] = true;
+		power(idx + 1, sel);
+		sel[idx] = false;
+		power(idx + 1, sel);
+	}
+
+	private static void kill(boolean[] sel, ArrayList<Enemy> copyEnemy) {
+		while (copyEnemy.size() != 0) {
+			// sel[i] 가 true인 자리가 궁수가 있는 자리
+			// killlist에 넣어두고
+			HashMap<Integer, Integer> killIdx = new HashMap<Integer, Integer>();
+			
+			for (int i = 0; i < sel.length; i++) {
+				// false면 그냥 패스
+				if (!sel[i])
+					continue;
+
+				int myX = N;
+				int myY = i;
+				
+				int minDist = D+1;
+				int idx = 0;
+				int minY = 0;
+				boolean kill = false;
+
+				// enemylist를 돌면서 거리가 D이하인 적을 찾아서 없애기
+				for (int j = 0; j < copyEnemy.size(); j++) {
+					Enemy cur = copyEnemy.get(j);
+
+					int dist = Math.abs(cur.x - myX) + Math.abs(cur.y - myY);
+					
+//					System.out.println(i);
+//					System.out.println(dist + " " + D + " "+ minDist + " " + dist + " " + idx + " " + cur.y);
+					
+					//같은 거리면 j가 더 작은게 죽어야함
+					if (dist <= D && minDist == dist) {
+						if (minY > cur.y) {
+							minY = cur.y;
+							idx = j;
+						}
+						minDist = dist;
+						kill = true;
+					}
+
+					else if (dist <= D && minDist > dist) {
+						minY = cur.y;
+						minDist = dist;
+						idx = j;
+						kill = true;
+					}
+				}
+				
+//				System.out.println(i + " " + minJ);
+				
+				if (kill) killIdx.put(idx, idx);
+			}
+			
+//			System.out.println(killIdx);
+			
+			//killIdx에 포함되지 않은 적들로만 새로운 리스트 구성
+			//killlist에 있는 궁수 한 번에 죽이기
+
+			ArrayList<Enemy> newEnemy = new ArrayList<Enemy>();
+			for (int i =0 ; i < copyEnemy.size(); i++) {
+				if (killIdx.containsKey(i)) continue;
+				else {
+					Enemy cur = copyEnemy.get(i);
+					newEnemy.add(new Enemy(cur.x, cur.y));
+				}
+			}
+			
+			answer += copyEnemy.size() - newEnemy.size();
+			
+//			System.out.println("after kill " + newEnemy);
+//			System.out.println("answer " + answer);
+
+			copyEnemy.clear();
+			for (int i = 0; i < newEnemy.size(); i++) {
+				Enemy cur = newEnemy.get(i);
+				copyEnemy.add(new Enemy(cur.x, cur.y));
+			}
+			
+			// 적 이동
+			for (int i = 0; i < copyEnemy.size(); i++) {
+				Enemy cur = copyEnemy.get(i);
+				cur.x++;
+
+				if (cur.x == N) {
+					copyEnemy.remove(i);
+					i--;
+				}
+			}
+			
+//			System.out.println("after move " + copyEnemy);
+
 		}
 
-		sel[k] = idx;
-		combination(idx + 1, k + 1, sel);
-		combination(idx + 1, k, sel);
 	}
 
 }
