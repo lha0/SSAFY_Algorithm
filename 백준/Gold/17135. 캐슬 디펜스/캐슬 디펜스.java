@@ -1,4 +1,3 @@
-
 import java.io.*;
 import java.util.*;
 
@@ -19,13 +18,6 @@ public class Main {
 		public int compareTo(Enemy o) {
 			return this.x == o.x ? this.y - o.y : o.x - this.x;
 		}
-
-		@Override
-		public String toString() {
-			return "Enemy [x=" + x + ", y=" + y + "] \n";
-		}
-		
-		
 	}
 
 	public static void main(String[] args) throws IOException {
@@ -71,6 +63,8 @@ public class Main {
 				if (sel[i])
 					num++;
 			}
+			
+			if (num != 3) return;
 
 			// enemyList 복사
 			ArrayList<Enemy> copyEnemy = new ArrayList<Enemy>();
@@ -81,12 +75,9 @@ public class Main {
 			
 			Collections.sort(copyEnemy);
 			
-//			System.out.println("궁사 위치 " + Arrays.toString(sel));
-			
 			answer = 0;
 			// 세 명이면 적 죽이러
-			if (num == 3)
-				kill(sel, copyEnemy);
+			kill(sel, copyEnemy);
 
 			max = Math.max(max, answer);
 
@@ -115,8 +106,8 @@ public class Main {
 				int myY = i;
 				
 				int minDist = D+1;
-				int idx = 0;
-				int minY = 0;
+				int idx = 0;   // 죽일 적의 idx
+				int minY = 0;  // 가장 왼쪽인 y
 				boolean kill = false;
 
 				// enemylist를 돌면서 거리가 D이하인 적을 찾아서 없애기
@@ -124,10 +115,7 @@ public class Main {
 					Enemy cur = copyEnemy.get(j);
 
 					int dist = Math.abs(cur.x - myX) + Math.abs(cur.y - myY);
-					
-//					System.out.println(i);
-//					System.out.println(dist + " " + D + " "+ minDist + " " + dist + " " + idx + " " + cur.y);
-					
+			
 					//같은 거리면 j가 더 작은게 죽어야함
 					if (dist <= D && minDist == dist) {
 						if (minY > cur.y) {
@@ -146,16 +134,11 @@ public class Main {
 					}
 				}
 				
-//				System.out.println(i + " " + minJ);
-				
 				if (kill) killIdx.put(idx, idx);
 			}
 			
-//			System.out.println(killIdx);
-			
-			//killIdx에 포함되지 않은 적들로만 새로운 리스트 구성
-			//killlist에 있는 궁수 한 번에 죽이기
-
+			// killIdx에 포함되지 않은 적들로만 새로운 리스트 구성
+			// = 죽이지 않은 적들로 포함된 리스트
 			ArrayList<Enemy> newEnemy = new ArrayList<Enemy>();
 			for (int i =0 ; i < copyEnemy.size(); i++) {
 				if (killIdx.containsKey(i)) continue;
@@ -165,11 +148,9 @@ public class Main {
 				}
 			}
 			
+			// 두 리스트의 차이가 죽인 적의 수
 			answer += copyEnemy.size() - newEnemy.size();
 			
-//			System.out.println("after kill " + newEnemy);
-//			System.out.println("answer " + answer);
-
 			copyEnemy.clear();
 			for (int i = 0; i < newEnemy.size(); i++) {
 				Enemy cur = newEnemy.get(i);
@@ -182,13 +163,9 @@ public class Main {
 				cur.x++;
 
 				if (cur.x == N) {
-					copyEnemy.remove(i);
-					i--;
+					copyEnemy.remove(i--);
 				}
 			}
-			
-//			System.out.println("after move " + copyEnemy);
-
 		}
 
 	}
