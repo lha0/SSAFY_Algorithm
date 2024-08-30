@@ -1,4 +1,3 @@
-
 import java.io.*;
 import java.util.*;
 
@@ -52,35 +51,26 @@ public class Main {
 
 	private static void run(int idx) {
 		if (idx == cctvList.size()) {
-//			System.out.println("end");
-//			print();
-			checkZero();
+			checkZero(); // 0 세려서 최솟값으로 갱신
 			return;
 		}
 
 		CCTV cur = cctvList.get(idx);
-
-//		System.out.println(idx);
 
 		int[][] dx = cur.dx;
 		int[][] dy = cur.dy;
 
 		// i 번마다 90도 회전
 		for (int i = 0; i < dx.length; i++) {
-
-//			System.out.println("i " + i);
-
-			// 한 번 하나의 방향
+			// 본인의 방향으로 뻗어나가는 for문
 			for (int j = 0; j < dx[i].length; j++) {
 				int mult = 1;
 				while (true) {
 					int nx = cur.x + dx[i][j] * mult;
 					int ny = cur.y + dy[i][j] * mult;
-					
-//					System.out.println("nx " + nx + " ny " + ny);
 
 					if (nx >= 0 && nx < N && ny >= 0 && ny < M && office[nx][ny] != 6) {
-						// 빈칸이면
+						// 빈칸이면 자신 고유의 번호로 색칠 => 추후에 다른 값이 지우지 않게 하기 위해서
 						if (office[nx][ny] == 0) {
 							office[nx][ny] = idx + 8;
 						}
@@ -92,16 +82,11 @@ public class Main {
 				}
 
 			}
-//
-//			System.out.println("mark " + i);
-//			print();
+
 			// 하나의 방향으로 다 뻗어나간 후, 다음 CCTV로
 			run(idx + 1);
 
-//			System.out.println("back");
-
 			// 원복
-			// 한 번 하나의 방향
 			for (int j = 0; j < dx[i].length; j++) {
 				int mult = 1;
 				while (true) {
@@ -120,19 +105,9 @@ public class Main {
 				}
 
 			}
-
-//			print();
-
 			// 돌아와서 90도 회전
 		}
 
-	}
-
-	private static void print() {
-		for (int i = 0; i < N; i++) {
-			System.out.println(Arrays.toString(office[i]));
-		}
-		System.out.println();
 	}
 
 	private static void checkZero() {
