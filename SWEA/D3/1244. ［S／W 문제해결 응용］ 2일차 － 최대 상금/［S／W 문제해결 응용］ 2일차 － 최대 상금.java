@@ -4,7 +4,6 @@ import java.io.*;
 public class Solution {
 	static int T, change, max;
 	static String[] numStr;
-	static List<Integer> cont;
 
 	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -21,8 +20,8 @@ public class Solution {
 			for (int i = 0; i < numStr.length; i++) {
 				num[i] = Integer.parseInt(numStr[i]);
 			}
+			
 			max = 0;
-			cont = new ArrayList<Integer>();
 			
 			if (num.length < change) {
 				change = num.length;
@@ -49,8 +48,6 @@ public class Solution {
 
 			max = Math.max(max, result);
 
-//			System.out.println(result);
-
 			return;
 		}
 
@@ -59,20 +56,8 @@ public class Solution {
 				int temp = num[i];
 				num[i] = num[j];
 				num[j] = temp;
-
-//				int result = 0;
-//				int mult = 1;
-//				for (int r = num.length - 1; r >= 0; r--) {
-//					result += num[r] * mult;
-//					mult *= 10;
-//				}
 				
 				run(c+1, num);
-
-//				if (!cont.contains(result)) {
-//					run(c+1, num);
-//					cont.add(result);
-//				}
 
 				temp = num[i];
 				num[i] = num[j];
