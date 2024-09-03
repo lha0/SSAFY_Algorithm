@@ -1,6 +1,6 @@
-
 import java.io.*;
 import java.util.*;
+
 public class Solution {
 	static int T, D, W, K, min;
 	static int[][] cell;
@@ -49,9 +49,6 @@ public class Solution {
 				if (sel[i]) rows.add(i);
 			}
 			
-//			if (rows.size() == 2)
-//			System.out.println("power set 종료 : "+rows);
-			
 			//cell 복사
 			int[][] copyCell = new int[D][W];
 			for (int i =0 ; i < D; i++) {
@@ -78,8 +75,6 @@ public class Solution {
 			
 			if (test(copyCell)) {
 				min = Math.min(min, rows.size());
-//				System.out.println(min + " " + rows.size() + " " + rows);
-//				print(copyCell);
 			}
 			
 			return;
@@ -101,8 +96,6 @@ public class Solution {
 	}
 
 	private static boolean test(int[][] copyCell) {
-//		System.out.println("test");
-//		print(copyCell);
 		//하나의 열마다 D개의 행들을 체크
 		int pass = 0;
 		for (int col = 0; col < W; col++) {
@@ -130,13 +123,6 @@ public class Solution {
 		
 		if (pass == W) return true;
 		else return false;
-	}
-
-	private static void print(int[][] copyCell) {
-		for (int i =0 ; i < D; i++) {
-			System.out.println(Arrays.toString(copyCell[i]));
-		}
-		System.out.println();
 	}
 
 }
