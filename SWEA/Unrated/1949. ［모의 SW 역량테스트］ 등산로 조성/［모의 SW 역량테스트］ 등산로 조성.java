@@ -52,7 +52,6 @@ public class Solution {
 				
 				boolean[][] visited = new boolean[N][N];
 				
-//				System.out.println("######### 시작 #########");
 				visited[s[0]][s[1]] = true;
 				dfs(copyMap, visited, s[0], s[1], K, 1, 1);
 			}
@@ -70,10 +69,6 @@ public class Solution {
 		for (int i = 0; i < 4; i++) {
 			int nx = x + dx[i];
 			int ny = y + dy[i];
-			
-//			System.out.println("내 위치 " + x + " " + y);
-//			System.out.println("다음 위치 " + nx + " " + ny);
-//			System.out.println("k, cut, cnt " + k + " " + cut + " " + cnt);
 			
 			if (nx >= 0 && nx < N && ny >= 0 && ny < N) {
 				//다음 높이가 낮으면 그대로 go
@@ -112,9 +107,6 @@ public class Solution {
 					
 			}
 		}
-		
-//		System.out.println("~!!!!!!!! answer " + answer + " cnt " + cnt);
-//		System.out.println(x + " " + y);
 		
 		answer = Math.max(answer, cnt);
 		
