@@ -3,7 +3,8 @@ import java.util.*;
 import java.io.*;
 
 public class Solution {
-	static int N, adjMatrix[][];
+	static int N, adjMatrix[][], cnt;
+	
 	public static void main(String[] args) throws IOException {
 		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
@@ -26,7 +27,10 @@ public class Solution {
 			int ans = 0; //자신의 키를 알 수 있는 학생 수
 			//각 학생마다 자신보다 큰, 자신보다 작은 학생 각각 탐색
 			for (int i = 1; i <= N; i++) {
-				if(gtBFS(i) + ltBFS(i) == N-1)	ans++; 
+				cnt = 0;
+				gtDFS(i, new boolean[N+1]);
+				ltDFS(i, new boolean[N+1]);
+				if(cnt == N-1)	ans++; 
 			}
 			
 			bw.write("#" + tc + " " + ans + "\n");
@@ -35,49 +39,23 @@ public class Solution {
 		bw.close();
 	}
 	
-	private static int gtBFS(int start) { //자신보다 큰 학생따라 탐색
-		int cnt = 0;
-		
-		Queue<Integer> queue = new ArrayDeque<Integer>();
-		boolean[] visited = new boolean[N+1];
-		
-		queue.offer(start);
-		visited[start] = true;
-		
-		while(!queue.isEmpty()) {
-			int cur = queue.poll();
-			for (int i = 1; i <= N; i++) {
-				if (!visited[i] && adjMatrix[cur][i] != 0) {
-					queue.offer(i);
-					visited[i] = true;
-					cnt++; // 나보다 큰 대상 카운팅
-				}
+	private static void gtDFS(int cur, boolean[] visited) { //자신보다 큰 학생따라 탐색
+		visited[cur] = true;
+		for (int i = 1; i <= N; i++) {
+			if (!visited[i] && adjMatrix[cur][i] != 0) {
+				gtDFS(i, visited);
+				cnt++; // 나보다 큰 대상 카운팅
 			}
 		}
-		
-		return cnt;
 	}
 	
-	private static int ltBFS(int start) { //자신보다 작은 학생따라 탐색
-		int cnt = 0;
-		
-		Queue<Integer> queue = new ArrayDeque<Integer>();
-		boolean[] visited = new boolean[N+1];
-		
-		queue.offer(start);
-		visited[start] = true;
-		
-		while(!queue.isEmpty()) {
-			int cur = queue.poll();
-			for (int i = 1; i <= N; i++) {
-				if (!visited[i] && adjMatrix[i][cur] != 0) {
-					queue.offer(i);
-					visited[i] = true;
-					cnt++; // 나보다 작은 대상 카운팅
-				}
+	private static void ltDFS(int cur, boolean[] visited) { //자신보다 작은 학생따라 탐색
+		visited[cur] = true;
+		for (int i = 1; i <= N; i++) {
+			if (!visited[i] && adjMatrix[i][cur] != 0) {
+				ltDFS(i, visited);
+				cnt++; // 나보다 작은 대상 카운팅
 			}
 		}
-		
-		return cnt;
 	}
 }
