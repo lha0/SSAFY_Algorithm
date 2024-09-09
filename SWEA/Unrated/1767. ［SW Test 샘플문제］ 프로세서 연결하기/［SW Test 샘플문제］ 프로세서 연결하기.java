@@ -39,8 +39,7 @@ public class Solution {
 				}
 			}
 			
-			// 좌표마다 부분조합 정하기
-			comb(0, new boolean[coord.size()]);
+			run(0, 0, 0);
 			
 			if (min == Integer.MAX_VALUE) min = 0;
 			
@@ -51,42 +50,21 @@ public class Solution {
 		bw.close();
 		br.close();
 	}
-	
-
-	private static void comb(int k, boolean[] sel) {
-		if (k == sel.length) {
-			combList = new ArrayList<>();
-			for (int i = 0; i < sel.length; i++) {
-				if (sel[i]) {
-					combList.add(coord.get(i));	
-				}
-			}
-			
-			//부분조합별로 코어 연결해보기
-			run(0, 0, 0);
-			return;
-		}
-		
-		sel[k] = true;
-		comb(k+1, sel);
-		sel[k] = false;
-		comb(k+1, sel);
-	}
 
 	private static void run(int idx, int core, int distResult) {
-		//기존 맥스값보다 더 많은 코어를 연결하면, max랑 min 초기화
-		if (max < core) {
-			max = core;
-			min = distResult;
-		} else if (max == core) {
-			min = Math.min(min, distResult);
-		}
 		
-		if (idx == combList.size()) {
+		if (idx == coord.size()) {
+			//기존 맥스값보다 더 많은 코어를 연결하면, max랑 min 초기화
+			if (max < core) {
+				max = core;
+				min = distResult;
+			} else if (max == core) {
+				min = Math.min(min, distResult);
+			}
 			return;
 		}
 		
-		int[] coo = combList.get(idx);
+		int[] coo = coord.get(idx);
 		int x = coo[0];
 		int y = coo[1];
 		
@@ -96,6 +74,9 @@ public class Solution {
 				int result = marking(x, y, dir);
 				run(idx+1, core+1, distResult + result);
 				unmarking(x, y, dir);
+			} else {
+				// 나아갈 수 없으면 해당 코어는 연결하지 않고 다음 코어로 이동
+				run(idx+1, core, distResult);
 			}
 		}
 	}
