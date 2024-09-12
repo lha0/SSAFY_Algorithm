@@ -1,4 +1,3 @@
-
 import java.io.*;
 import java.util.*;
 
@@ -23,7 +22,6 @@ public class Main {
 		answer = 0;
 		mem = new int[N+2];
 		
-//		System.out.println(Arrays.toString(T));
 		run();
 		
 		bw.write(mem[N+1] + "\n");
@@ -39,12 +37,6 @@ public class Main {
 			if (i == N) 
 				mem[N+1] = Math.max(mem[N], mem[N+1]);
 		}
-		
-//		if (T[N] == 1) mem[N+1] = mem[N] + P[N];
-//		else mem[N+1] = mem[N];
-		
-//		System.out.println(Arrays.toString(mem));
-		
 	}
 
 
