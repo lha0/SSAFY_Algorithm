@@ -78,9 +78,7 @@ public class Main {
 			
 			//작동
 			//1 : 반시계, 2: 시계
-//			System.out.println("반시계");
 			wind(acUX, acUY, 0);
-//			System.out.println("시계");
 			wind(acDX, acDY, 1);
 			
 			//dustList 초기화
@@ -97,31 +95,30 @@ public class Main {
 	}
 
 	private static void wind(int sx, int sy, int dir) {
-		int[] wDx = windDx[dir];
+		int[] wDx = windDx[dir]; //반시계, 시계에 따라 다른 dx, dy
 		int[] wDy = windDy[dir];
 		
 		int wIdx = 0;
 		int initX = sx;
-		int initY = sy;
+		int initY = sy; // 초깃값
 		sx = sx + wDx[wIdx];
-		sy = sy + wDy[wIdx];
+		sy = sy + wDy[wIdx]; // 바꿀 위치
 		int nx = sx + wDx[wIdx];
-		int ny = sy + wDy[wIdx];
+		int ny = sy + wDy[wIdx]; // 참조할 위치
 		
 		while(true) {
-//			System.out.println("sx " + sx + " " + sy);
-//			System.out.println("nx " + nx + " " + ny);
-			
 			if (originMap[nx][ny] == -1) {
 				originMap[sx][sy] = 0;
 				break;
 			}
 			
+			//값 업데이트
 			originMap[sx][sy] = originMap[nx][ny];
 			
 			sx = nx;
 			sy = ny;
 			
+			//모서리 도착
 			if ((nx == 0 && ny == 0) || (nx == R-1 && ny == 0)) {
 				wIdx++;
 			} else if ((nx == 0 && ny == C-1) || (nx == R-1 && ny == C-1)) {
@@ -130,16 +127,11 @@ public class Main {
 				wIdx++;
 			}
 			
+			// 다음 값 업데이트
 			nx = sx + wDx[wIdx];
 			ny = sy + wDy[wIdx];
 			
 		}
-		
-//		for (int i = 0; i < originMap.length; i++) {
-//			System.out.println(Arrays.toString(originMap[i]));
-//		}
-//		System.out.println();
-		
 	}
 
 	private static void expand() {
@@ -149,15 +141,15 @@ public class Main {
 			Dust curDust = dustList.get(i);
 			
 			List<int[]> blankCoord = new ArrayList<int[]>();
-			int findBlank = blank(curDust.x, curDust.y,  blankCoord);
+			int findBlank = blank(curDust.x, curDust.y,  blankCoord); // 내 주변 빈칸 찾아서 리스트에 좌표값 저장 및 빈칸 개수 찾기
 			
 			int expandAmount = (int) Math.floor(curDust.amount / 5);
 			int leftAmount = curDust.amount - (expandAmount * findBlank);
 			
-			newMap[curDust.x][curDust.y] += leftAmount;
+			newMap[curDust.x][curDust.y] += leftAmount; // 현재 위치는 남은 값
 			for (int j = 0; j < blankCoord.size(); j++) {
 				int[] next = blankCoord.get(j);
-				newMap[next[0]][next[1]] += expandAmount;
+				newMap[next[0]][next[1]] += expandAmount; // 확산 칸에는 확산 양
 			}
 			
 		}
@@ -169,12 +161,6 @@ public class Main {
 				originMap[i][j] = newMap[i][j];
 			}
 		}
-		
-//		System.out.println("확산");
-//		for (int i = 0; i < newMap.length; i++) {
-//			System.out.println(Arrays.toString(originMap[i]));
-//		}
-//		System.out.println();
 	}
 
 	private static int blank(int x, int y, List<int[]> coord) {
