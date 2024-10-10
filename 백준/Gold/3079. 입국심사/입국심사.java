@@ -5,7 +5,7 @@ import java.io.*;
 public class Main {
 	 static int N, M;
 	 static long answer;
-	 static long[] times;
+	 static int[] times;
 	 
 	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -15,7 +15,7 @@ public class Main {
 		N = Integer.parseInt(st.nextToken());
 		M = Integer.parseInt(st.nextToken());
 		
-		times = new long[N];
+		times = new int[N];
 		for (int i = 0; i < N; i++) {
 			 st = new StringTokenizer(br.readLine());
 			 int next = Integer.parseInt(st.nextToken());
@@ -44,7 +44,7 @@ public class Main {
 					count += mid / times[i];
 				}
 				
-				if (count > M) break;
+				if (count > M) break;   // M을 넘으면 오버플로우 발생하기 전에 break
 			}
 		
 			if (count < M) { // 시간 부족,
@@ -53,9 +53,6 @@ public class Main {
 				answer = Math.min(answer, mid);
 				max = mid - 1;
 			}
-			
-//			System.out.println(count + " " + mid);
-//			System.out.println(min + " " + max);
 		}
 	}
 
