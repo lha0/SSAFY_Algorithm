@@ -26,26 +26,13 @@ public class Solution {
 
 				}
 			}
-			
+
 			answer = Integer.MAX_VALUE;
 
-			 run(N, maps);
+			run(N, maps);
 
-//			// 맵 복사
-//			int[][] newMap = new int[H][W];
-//			copyMap(newMap, 0);
-//
-//			// 깨뜨리기
-//			System.out.println("---------- Break -------------");
-//			Break(new int[] {2, 2}, newMap);
-//			print(newMap);
-//
-//			// 중력
-//			System.out.println("---------- Gravity -------------");
-//			Gravity(newMap);
-//			print(newMap);
-			 
-			 if (answer == Integer.MAX_VALUE) answer = 0;
+			if (answer == Integer.MAX_VALUE)
+				answer = 0;
 			bw.write("#" + tc + " " + answer + "\n");
 		}
 
@@ -54,19 +41,16 @@ public class Solution {
 	}
 
 	private static void run(int time, int[][] maps) {
-//		System.out.println("########### Time ########### " + time);
 		if (time == 0) {
 			// map 에 남은 벽돌 세리기
 			int count = 0;
 			for (int i = 0; i < maps.length; i++) {
 				for (int j = 0; j < maps[i].length; j++) {
-					if (maps[i][j] > 0) count++;
+					if (maps[i][j] > 0)
+						count++;
 				}
 			}
-			
-//			print(maps);
-//			System.out.println("count " + count);
-			
+
 			answer = Math.min(answer, count);
 			return;
 		}
@@ -76,27 +60,19 @@ public class Solution {
 
 		for (int i = 0; i < list.size(); i++) {
 			int[] cur = list.get(i);
-			
+
 			// 맵 복사
 			int[][] newMap = new int[H][W];
-			copyMap(newMap, maps, 0);
+			copyMap(newMap, maps);
 
-////			System.out.println("before break");
-//			print(newMap);
-			
 			// 깨뜨리기
-//			System.out.println("---------- Break -------------");
 			Break(cur, newMap);
-//			System.out.println("out break");
-//			print(newMap);
 
 			// 중력
-//			System.out.println("---------- Gravity -------------");
 			Gravity(newMap);
-//			print(newMap);
-			
-			run(time-1, newMap);
-			
+
+			run(time - 1, newMap);
+
 		}
 
 	}
@@ -110,24 +86,23 @@ public class Solution {
 					while (idx > 0 && newMap[idx][c] == 0) {
 						idx--;
 					}
-					
-					if (idx == 0 && newMap[idx][c] == 0) break;
-					
+
+					if (idx == 0 && newMap[idx][c] == 0)
+						break;
+
 					newMap[row][c] = newMap[idx][c];
 					newMap[idx][c] = 0;
-					
+
 				}
 				row--;
 			}
 		}
-		
+
 	}
 
 	private static void Break(int[] curBlock, int[][] newMap) {
 		// 깰 블록 담기
 		Queue<int[]> queue = new ArrayDeque<int[]>();
-		
-//		System.out.println("!!!!!!!! break !!!!!!!!!!! " +  curBlock[0] + " " +curBlock[1]);
 
 		queue.offer(new int[] { curBlock[0], curBlock[1], newMap[curBlock[0]][curBlock[1]] });
 
@@ -155,10 +130,6 @@ public class Solution {
 				}
 			}
 		}
-		
-//		System.out.println("In break");
-//		print(newMap);
-
 	}
 
 	private static List<int[]> TopElement(int[][] originMap) {
@@ -175,25 +146,11 @@ public class Solution {
 		return list;
 	}
 
-	private static void print(int[][] map) {
-		System.out.println("print");
-		for (int i = 0; i < map.length; i++) {
-			System.out.println(Arrays.toString(map[i]));
-		}
-	}
+	private static void copyMap(int[][] newMap, int[][] originMap) {
 
-	private static void copyMap(int[][] newMap, int[][] originMap, int dir) {
-		if (dir == 0) {
-			for (int i = 0; i < originMap.length; i++) {
-				for (int j = 0; j < originMap[i].length; j++) {
-					newMap[i][j] = originMap[i][j];
-				}
-			}
-		} else {
-			for (int i = 0; i < originMap.length; i++) {
-				for (int j = 0; j < originMap[i].length; j++) {
-					originMap[i][j] = newMap[i][j];
-				}
+		for (int i = 0; i < originMap.length; i++) {
+			for (int j = 0; j < originMap[i].length; j++) {
+				newMap[i][j] = originMap[i][j];
 			}
 		}
 
