@@ -1,4 +1,3 @@
-
 import java.io.*;
 import java.util.*;
 
@@ -30,7 +29,6 @@ public class Main {
 		if (check()) answer = 0;
 		else {
 			run(0, 3, 1);
-				
 		}
 		
 		
@@ -53,6 +51,7 @@ public class Main {
 		
 		for (int i = startCol; i <= H; i++) {
 			for (int j = 1; j <= N; j++) {
+				//현위치, 좌, 우가 다 false일 경우만 설치 가능
 				if (ladder[i][j] == false 
 						&& ladder[i][j-1] == false 
 						&& j+1 <= N && ladder[i][j+1] == false) {
@@ -71,20 +70,17 @@ public class Main {
 			int col = start;
 			int row = 1;
 			
-			while (row >= 1 && row <= H && col >= 1 && col <= N) {
+			while (row <= H && col >= 1 && col <= N) {
 				if (ladder[row][col] == true) {
 					col++;
-					row++;
 				}
 				
 				else if (col-1 > 0 && ladder[row][col-1] == true) {
 					col--;
-					row++;
 				}
 				
-				else {
-					row++;
-				}
+				row++;
+				
 			}
 			
 			if (col != start) return false;
