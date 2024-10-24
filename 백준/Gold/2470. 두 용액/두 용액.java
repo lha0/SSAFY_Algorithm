@@ -40,7 +40,7 @@ public class Main {
 		answer = new int[] {liquid[start], liquid[end]};
 		
 		while (start < end-1) {
-			
+			// start+1을 하는게 작을지, end-1을 하는게 작을지 미리 판단 후 작은 방향으로 포인터 이동
 			if (Math.abs(liquid[start+1] + liquid[end]) < Math.abs(liquid[start] + liquid[end-1])) {
 				sum -= liquid[start];
 				start++;
@@ -53,11 +53,7 @@ public class Main {
 				diff = Math.abs(0 - Math.abs(sum));
 			}
 			
-			
-			
-//			System.out.println("start " + start + " end " + end);
-//			System.out.println("mindiff " + minDiff + " diff " + diff);
-			
+			// 최소 차이보다 작다면 답 갱신
 			if (diff < minDiff) {
 				answer = new int[] {liquid[start], liquid[end]};
 				minDiff = diff;
