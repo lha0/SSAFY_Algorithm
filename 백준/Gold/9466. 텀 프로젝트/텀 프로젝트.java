@@ -35,7 +35,7 @@ public class Main {
 			}
 			
 			for (int i = 1; i <= n; i++) {
-				//아직 거쳐가지 않았다면
+				// 아직 done이 아니면
 				if (!done[i]) {
 					dfs(i);
 				}
@@ -62,6 +62,7 @@ public class Main {
 		}
 		
 		else {
+			//방문했는데 done이 아니라면, 싸이클
 			if (!done[next]) {
 				count++;
 				
