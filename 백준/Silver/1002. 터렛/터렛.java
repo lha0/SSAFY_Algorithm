@@ -17,25 +17,23 @@ public class Main {
             y2 = Integer.parseInt(st.nextToken());
             r2 = Integer.parseInt(st.nextToken());
 
-            answer = 0;
-
 //            double d = Math.sqrt(Math.pow(x1-x2, 2) + Math.pow(y1-y2, 2));
 
             int d = (int)(Math.pow(x1-x2, 2) + Math.pow(y1-y2, 2));
 
             //접점이 무한대 
-            if ((x1 == x2) && (y1 == y2) && (r1 == r2)) {
+            if (x1 == x2 && y1 == y2 && r1 == r2) {
                 answer = -1;
             }
 
             //접점이 2개
-            else if ((Math.pow(r1-r2, 2) < d) && (Math.pow(r1 + r2, 2) > d)) {
+            else if (Math.pow(r1-r2, 2) < d && Math.pow(r1 + r2, 2) > d) {
                 answer = 2;
             }
 
             //접점 1개 
-            else if ((d == Math.pow(r1 - r2, 2)) || //내접
-                    (d == Math.pow(r1 + r2, 2)) //외접
+            else if (d == Math.pow(r1 - r2, 2) || //내접
+                    d == Math.pow(r1 + r2, 2) //외접
             ) {
                 answer = 1;
             }
