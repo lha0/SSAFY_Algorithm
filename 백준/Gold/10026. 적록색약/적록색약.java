@@ -49,11 +49,6 @@ public class Main {
                     answer++;
                 }
 
-            }
-        }
-
-        for (int i = 0; i < N; i++) {
-            for (int j = 0; j < N; j++) {
                 if (!blind_visited[i][j]) {
                     blind_visited[i][j] = true;
                     bfs(i, j, blind_board[i][j], true);
